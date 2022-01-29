@@ -2,39 +2,18 @@
   <div class="container">
     <q-header bordered class="bg-dark text-white q-pa-xs">
       <q-toolbar>
-        <q-toolbar-title class="text-center"> Chats </q-toolbar-title>
+        <q-toolbar-title class="text-center"> Friends </q-toolbar-title>
         <div>
-          <q-icon name="fas fa-pen" @click="prompt = !prompt" />
+          <q-icon name="fas fa-plus" @click="prompt = !prompt" />
         </div>
       </q-toolbar>
     </q-header>
 
     <div class="content">
-      <q-list>
-        <div v-for="r in 15" :key="r" class="">
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
-              <q-avatar>
-                <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
-              </q-avatar>
-            </q-item-section>
-
-            <q-item-section>
-              <q-item-label lines="1">Brunch this weekend?</q-item-label>
-              <q-item-label caption lines="2">
-                I'll be in your neighborhood doing errands this weekend. Do
-                you want to grab brunch?
-              </q-item-label>
-            </q-item-section>
-
-            <q-item-section side top> 1 min ago </q-item-section>
-          </q-item>
-          <q-separator spaced inset="item" />
-        </div>
-      </q-list>
+        weee
     </div>
 
-    <q-dialog v-model="prompt">
+        <q-dialog v-model="prompt">
       <q-card style="min-width: 350px">
         <q-card-section>
           <div class="text-h6">Enter a username</div>
@@ -72,6 +51,7 @@
   </div>
 </template>
 
+
 <script>
 import { ref } from "vue";
 import { useQuasar } from "quasar";
@@ -102,25 +82,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.call {
-  font-size: 25px;
-  padding: 6px;
-}
-.btn {
-  width: 125px;
-}
-.buttons-group {
-  margin: 8px;
-}
-.alert-badge {
-  color: pink;
-  background: white;
-  width: 100% !important;
-  height: 100% !important;
-}
-.q-icon {
-  font-size: 18px;
-}
-</style>

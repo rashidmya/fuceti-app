@@ -8,7 +8,7 @@
     <BottomNav></BottomNav>
 
     <q-page-container>
-      <q-page>
+      <q-page padding>
         <router-view></router-view>
       </q-page>
     </q-page-container>
