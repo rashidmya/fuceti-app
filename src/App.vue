@@ -1,11 +1,9 @@
 <template>
   <q-layout
     view="lHh lpr lFf"
-    style="height: 600px"
-    class="shadow-2 rounded-borders window-height"
   >
     
-    <BottomNav></BottomNav>
+    <BottomNav v-if="isLoggedIn"></BottomNav>
 
     <q-page-container>
       <q-page padding>

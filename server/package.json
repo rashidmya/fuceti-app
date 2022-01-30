@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon dist/app.js"
+    "server": "nodemon dist/app.js",
+    "watch": "tsc -w",
+    "start": "npm-run-all --parallel server watch"
   },
   "author": "Rashid",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.2",
     "socket.io": "^4.4.1"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }

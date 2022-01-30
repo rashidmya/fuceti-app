@@ -7,12 +7,19 @@
           <q-icon name="fas fa-pen" @click="prompt = !prompt" />
         </div>
       </q-toolbar>
+      <div class="search-bar-container">
+        <q-input dense dark standout v-model="text" label="Search">
+          <template v-slot:append v-if="text.length > 0">
+            <q-icon name="close" @click="text = ''" class="cursor-pointer" />
+          </template>
+        </q-input>
+      </div>
     </q-header>
 
     <div class="content">
-      <q-list>
+      <q-list padding separator>
         <div v-for="r in 15" :key="r" class="">
-          <q-item clickable v-ripple>
+          <q-item clickable v-ripple dense>
             <q-item-section avatar>
               <q-avatar>
                 <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
@@ -20,10 +27,10 @@
             </q-item-section>
 
             <q-item-section>
-              <q-item-label lines="1">Brunch this weekend?</q-item-label>
+              <q-item-label lines="1">Emma</q-item-label>
               <q-item-label caption lines="2">
-                I'll be in your neighborhood doing errands this weekend. Do
-                you want to grab brunch?
+                I'll be in your neighborhood doing errands this weekend. Do you
+                want to grab brunch?
               </q-item-label>
             </q-item-section>
 
@@ -98,6 +105,7 @@ export default {
       cancelAdd,
       username,
       prompt,
+      text: ref(""),
     };
   },
 };
@@ -122,5 +130,11 @@ export default {
 }
 .q-icon {
   font-size: 18px;
+}
+
+.search-bar-container {
+  width: 90%;
+  margin: auto;
+  padding: 14px 0;
 }
 </style>

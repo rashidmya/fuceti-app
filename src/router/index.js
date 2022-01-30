@@ -14,7 +14,10 @@ const router = createRouter({
         { name: 'friends', path: '/friends', component: Friends, meta: { requiresAuth: true } },
         { name: 'settings', path: '/settings', component: Settings, meta: { requiresAuth: true } },
         { name: 'login', path: '/login', component: Login },
-    ]
+    ],
+    scrollBehavior(){
+        return { top: 0 }
+    }
 })
 
 router.beforeEach((to, from, next) => {
