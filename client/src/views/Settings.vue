@@ -64,26 +64,23 @@
   margin: 1em 0;
   text-align: center;
 }
-
 .q-header .user {
   margin-top: 0.36em;
 }
-
 .q-header .nickname {
-  font-size: 25px;
+  font-size: 28px;
   font-weight: 700;
 }
-
 .q-header .username {
   color: darkgray;
 }
-
 .content {
-  font-size: 11px;
+  font-size: 12px;
 }
-
 .content .q-avatar {
-  font-size: 22px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 28px !important;
 }
 
 </style>

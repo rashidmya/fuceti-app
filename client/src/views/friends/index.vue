@@ -7,35 +7,35 @@
           <q-icon name="fas fa-plus" @click="prompt = !prompt" />
         </div>
       </q-toolbar>
-      <div class="search-bar-container">
-        <q-input
-          dense
-          dark
-          standout
-          v-model="text"
-          label="Search"
-        >
-          <template v-slot:append v-if="text.length > 0">
-            <q-icon name="close" @click="text = ''" class="cursor-pointer" />
-          </template>
-        </q-input>
-      </div>
     </q-header>
 
     <div class="content">
-      <q-list dark separator>
-        <q-item clickable v-ripple v-for="x in 16" :key="x">
-          <q-item-section avatar>
-            <q-avatar>
-              <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
-            </q-avatar>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Davion</q-item-label>
-            <q-item-label caption>last seen 10 minutes ago</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <div class="search-bar-container">
+        <q-input class="search-bar" dense dark standout v-model="searchInput" label="Search">
+          <template v-slot:append v-if="searchInput.length > 0">
+            <q-icon
+              name="close"
+              @click="searchInput = ''"
+              class="cursor-pointer"
+            />
+          </template>
+        </q-input>
+      </div>
+      <div class="friends-list">
+        <q-list dark separator>
+          <q-item clickable v-ripple v-for="x in 16" :key="x">
+            <q-item-section avatar>
+              <q-avatar>
+                <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Davion - {{ x }}</q-item-label>
+              <q-item-label caption>last seen 10 minutes ago</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
     </div>
 
     <q-dialog v-model="prompt">
@@ -77,14 +77,17 @@
 </template>
 
 
-<script>
-import { ref } from "vue";
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
 import { useQuasar } from "quasar";
-export default {
+export default defineComponent({
   setup() {
     const $q = useQuasar();
     const username = ref("");
     const prompt = ref(false);
+    const searchInput = ref("");
+    const showSearchBar = ref(true);
+
     function confirmAdd() {
       console.log(username.value);
       prompt.value = false;
@@ -94,6 +97,7 @@ export default {
         message: "Friend request has been sent!",
       });
     }
+
     function cancelAdd() {
       username.value = "";
     }
@@ -103,16 +107,24 @@ export default {
       cancelAdd,
       username,
       prompt,
-      text: ref("")
+      searchInput,
+      showSearchBar,
     };
   },
-};
+});
 </script>
 
 <style scoped>
 .search-bar-container {
-  width: 90%;
-  margin: auto;
-  padding: 14px 0;
+  margin: 0;
+  padding: 0;
+  transform: translateY(0);
+  opacity: 1;
+  transition: 0.2s all ease-out;
 }
+
+.search-bar{
+  padding: 10px;
+}
+
 </style>

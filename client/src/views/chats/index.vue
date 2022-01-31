@@ -7,19 +7,16 @@
           <q-icon name="fas fa-pen" @click="prompt = !prompt" />
         </div>
       </q-toolbar>
-      <div class="search-bar-container">
-        <q-input dense dark standout v-model="text" label="Search">
-          <template v-slot:append v-if="text.length > 0">
-            <q-icon name="close" @click="text = ''" class="cursor-pointer" />
-          </template>
-        </q-input>
-      </div>
     </q-header>
 
     <div class="content">
       <q-list padding separator>
         <div v-for="r in 15" :key="r" class="">
-          <q-item clickable v-ripple dense>
+          <q-item
+            clickable
+            v-ripple
+            dense
+          >
             <q-item-section avatar>
               <q-avatar>
                 <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
@@ -79,14 +76,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import { ref } from "vue";
 import { useQuasar } from "quasar";
-export default {
+
+export default defineComponent({
   setup() {
     const $q = useQuasar();
     const username = ref("");
     const prompt = ref(false);
+    // const showControls = ref(false);
+
     function confirmAdd() {
       console.log(username.value);
       prompt.value = false;
@@ -96,6 +97,7 @@ export default {
         message: "Friend request has been sent!",
       });
     }
+
     function cancelAdd() {
       username.value = "";
     }
@@ -105,10 +107,9 @@ export default {
       cancelAdd,
       username,
       prompt,
-      text: ref(""),
     };
   },
-};
+});
 </script>
 
 <style scoped>
@@ -136,5 +137,9 @@ export default {
   width: 90%;
   margin: auto;
   padding: 14px 0;
+}
+
+.show-controls {
+  background-color: white;
 }
 </style>

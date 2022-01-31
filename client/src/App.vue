@@ -20,7 +20,6 @@ import { useQuasar } from "quasar";
 import { useStore } from "./store";
 import { computed } from "vue";
 
-
 export default defineComponent({
   name: "App",
   components: { BottomNav },
