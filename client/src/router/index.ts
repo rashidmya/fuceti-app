@@ -4,7 +4,7 @@ import Chats from '../views/Chats.vue';
 import Login from '../views/Login.vue';
 import Friends from '../views/Friends.vue';
 import Settings from '../views/Settings.vue';
-import store from "../store";
+import {store} from "../store";
 
 const router = createRouter({
     history: createWebHistory(),

@@ -6,7 +6,7 @@
   "scripts": {
     "server": "nodemon dist/app.js",
     "watch": "tsc -w",
-    "start": "npm-run-all --parallel server watch"
+    "start": "npm-run-all --parallel watch server"
   },
   "author": "Rashid",
   "license": "ISC",
