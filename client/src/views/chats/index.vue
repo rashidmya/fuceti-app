@@ -16,10 +16,12 @@
             clickable
             v-ripple
             dense
+            :to="{ name: 'chat', params: { id: r } }"
           >
             <q-item-section avatar>
               <q-avatar>
                 <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
+                  <q-badge color="red" rounded floating>{{r}}</q-badge>
               </q-avatar>
             </q-item-section>
 

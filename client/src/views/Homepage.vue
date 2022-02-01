@@ -10,7 +10,7 @@
           <div class="text">
             Join our discord for updates
           </div>
-          <q-btn href="#">
+          <q-btn to="#">
             <q-icon name="fab fa-discord" class="q-mr-sm" />
             Discord
           </q-btn>
