@@ -1,17 +1,25 @@
 <template>
   <div class="container">
-    <q-header bordered class="bg-dark text-white q-pa-xs">
-      <q-toolbar>
-        <q-toolbar-title class="text-center"> Friends </q-toolbar-title>
-        <div>
-          <q-icon name="fas fa-plus" @click="prompt = !prompt" />
-        </div>
-      </q-toolbar>
-    </q-header>
+    <the-header>
+      <template #default> Friends </template>
+      <template #action>
+        <q-icon
+          name="fas fa-user-plus"
+          @click="addUserDialog = !addUserDialog"
+        ></q-icon>
+      </template>
+    </the-header>
 
     <div class="content">
       <div class="search-bar-container">
-        <q-input class="search-bar" dense dark standout v-model="searchInput" label="Search">
+        <q-input
+          class="search-bar"
+          dense
+          dark
+          standout
+          v-model="searchInput"
+          label="Search"
+        >
           <template v-slot:append v-if="searchInput.length > 0">
             <q-icon
               name="close"
@@ -37,76 +45,32 @@
         </q-list>
       </div>
     </div>
-
-    <q-dialog v-model="prompt">
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">Enter a username</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input
-            dense
-            v-model="username"
-            autofocus
-            @keyup.enter="confirmAdd"
-          />
-        </q-card-section>
-
-        <q-card-actions align="right" class="buttons-group text-primary">
-          <q-btn
-            class="btn"
-            color="red"
-            rounded
-            label="Cancel"
-            v-close-popup
-            @click="cancelAdd"
-          />
-          <q-btn
-            class="btn"
-            color="primary"
-            rounded
-            label="Add user"
-            v-close-popup
-            @click="confirmAdd"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <FindDialog
+      @closeDialog="addUserDialog = !addUserDialog"
+      :showDialog="addUserDialog"
+    ></FindDialog>
   </div>
 </template>
 
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { useQuasar } from "quasar";
+import TheHeader from "../../components/layouts/TheHeader.vue";
+import FindDialog from "../../components/ui/FindDialog.vue";
+import { defineComponent, ref } from "vue";
+
 export default defineComponent({
+  components: {
+    TheHeader,
+    FindDialog,
+  },
   setup() {
-    const $q = useQuasar();
-    const username = ref("");
-    const prompt = ref(false);
+    const addUserDialog = ref(false);
     const searchInput = ref("");
     const showSearchBar = ref(true);
 
-    function confirmAdd() {
-      console.log(username.value);
-      prompt.value = false;
-      username.value = "";
-      $q.notify({
-        badgeClass: "alert-badge",
-        message: "Friend request has been sent!",
-      });
-    }
-
-    function cancelAdd() {
-      username.value = "";
-    }
 
     return {
-      confirmAdd,
-      cancelAdd,
-      username,
-      prompt,
+      addUserDialog,
       searchInput,
       showSearchBar,
     };
@@ -123,8 +87,7 @@ export default defineComponent({
   transition: 0.2s all ease-out;
 }
 
-.search-bar{
+.search-bar {
   padding: 10px;
 }
-
 </style>
