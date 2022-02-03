@@ -1,40 +1,6 @@
 <template>
   <div class="page-chat flex column">
-    <q-header class="bg-dark fixed-top">
-      <div class="row inline full-width">
-        <div class="back-button">
-          <router-link class="button" to="/chats">
-            <q-icon
-              style="font-size: 20px"
-              color="primary"
-              name="fas fa-chevron-left q-my-md q-mx-md"
-            />
-          </router-link>
-        </div>
-        <div class="profile row inline q-ml-xs">
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/img/avatar.png" />
-          </q-avatar>
-          <div class="user-info">
-            <div class="name">Will Smith</div>
-            <div class="status">
-              <q-icon
-                name="fas fa-circle"
-                class="status-icon"
-                :class="{ online: userOnline }"
-              />
-              Offline
-            </div>
-          </div>
-        </div>
-        <div class="call-buttons full">
-          <div class="row inline">
-            <q-icon color="primary" name="fas fa-video" class="call" />
-            <q-icon color="primary" name="fas fa-phone" class="call" />
-          </div>
-        </div>
-      </div>
-    </q-header>
+    <ChatHeader :userOnline="userOnline" />
     <div class="q-pa-md row justify-center">
       <div id="chat-container" class="full-width">
         <q-chat-message
@@ -66,37 +32,15 @@
         />
       </div>
     </div>
-    <q-footer elevated class="bg-dark">
-      <q-toolbar>
-        <q-form @submit="sendMessage" class="full-width message-form">
-          <q-input
-            rounded
-            v-model.trim="newMessage"
-            placeholder="Message"
-            class="message-input"
-            dense
-            outlined
-          >
-            <template #after>
-              <q-btn
-                round
-                dense
-                flat
-                @submit="sendMessage"
-                icon="send"
-                color="primary"
-              />
-            </template>
-          </q-input>
-        </q-form>
-      </q-toolbar>
-    </q-footer>
+    <ChatFooter @newMessage="sendMessage" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import moment from "moment";
+import ChatHeader from "../../components/chats/ChatHeader.vue";
+import ChatFooter from "../../components/chats/ChatFooter.vue";
 
 interface Message {
   text: string[];
@@ -105,27 +49,24 @@ interface Message {
 }
 
 export default defineComponent({
+  components: {
+    ChatHeader,
+    ChatFooter,
+  },
   setup() {
-    const otherUserDetails = { online: true };
-    const newMessage = ref("");
     const userOnline = ref(false);
-    const messages = ref(new Array);
-    console.log(messages.value);
+    const messages = ref(new Array());
 
-    function sendMessage() {
-      if (newMessage.value === "") return;
+    function sendMessage(newMessage: any) {
       const msg: Message = {
         text: [newMessage.value],
         stamp: `${Date.now()}`,
         sent: true,
       };
       messages.value.push(msg);
-      newMessage.value = "";
     }
 
     return {
-      otherUserDetails,
-      newMessage,
       userOnline,
       sendMessage,
       messages,
@@ -135,7 +76,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .page-chat::after {
   content: "";
   display: block;
@@ -231,41 +172,5 @@ export default defineComponent({
 }
 .message-form {
   padding: 15px;
-}
-.message-input {
-  color: black !important;
-}
-.q-header {
-  z-index: 2;
-  padding: 10px 0;
-}
-.q-header .profile {
-  margin: auto auto auto 0;
-}
-.q-header .user-info {
-  margin: auto auto auto 8px;
-}
-.q-header .name {
-  font-size: 14px;
-  font-weight: 700;
-}
-.q-header .status {
-  font-weight: 400;
-  font-size: 12px;
-  color: gray;
-}
-.q-header .status-icon {
-  font-size: 8px;
-  color: red;
-}
-.q-header .status-icon.online {
-  color: green;
-}
-.q-header .call-buttons {
-  margin: auto 8px auto auto;
-}
-.q-header .call-buttons .call {
-  font-size: 20px;
-  margin: 0 8px 0 18px;
 }
 </style>
