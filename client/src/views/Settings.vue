@@ -12,7 +12,7 @@
       </div>
     </q-header>
 
-    <div class="content q-mt-md full-width">
+    <div class="content q-mt-md q-mx-lg">
       <q-card class="q-mx-auto">
         <q-list dark dense>
           <q-item clickable v-ripple>

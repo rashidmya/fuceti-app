@@ -15,6 +15,8 @@
 
 <style scoped>
 .icon {
+  position: absolute;
   font-size: 18px;
+  right: 10px;
 }
 </style>
