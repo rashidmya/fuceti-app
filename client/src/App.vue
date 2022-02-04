@@ -1,8 +1,7 @@
 <template>
   <q-layout
-    view="lHh lpr lFf"
+    view="hHh lpR fFf"
   >
-    
     <BottomNav v-if="isLoggedIn"></BottomNav>
 
     <q-page-container>
