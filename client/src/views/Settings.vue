@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <q-header bordered class="bg-dark text-white">
+    <div bordered class="header text-white">
       <div class="profile-info">
         <q-avatar size="120px">
           <img src="https://cdn.quasar.dev/img/avatar.png" />
@@ -10,7 +10,7 @@
           <div class="username">bugavicious</div>
         </div>
       </div>
-    </q-header>
+    </div>
 
     <div class="content q-mt-md q-mx-lg">
       <q-card class="q-mx-auto">
@@ -21,21 +21,35 @@
                 rounded
                 color="blue"
                 text-color="white"
-                icon="fas fa-signature"
+                icon="fas fa-at"
               />
             </q-item-section>
             <q-item-section>Edit Profile</q-item-section>
-             <q-item-section side>
-               <q-icon name="fas fa-angle-right" class="side"/>
-             </q-item-section>
+            <q-item-section side>
+              <q-icon name="fas fa-angle-right" class="side" />
+            </q-item-section>
           </q-item>
-           <!-- <q-separator inset="item" /> -->
+          <!-- <q-separator inset="item" /> -->
         </q-list>
       </q-card>
 
-
       <q-card class="q-mx-auto q-my-md">
         <q-list dark dense>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <q-avatar
+                rounded
+                color="purple"
+                text-color="white"
+                icon="fas fa-share"
+              />
+            </q-item-section>
+            <q-item-section>Invite a friend</q-item-section>
+            <q-item-section side>
+              <q-icon name="fas fa-angle-right" class="side" />
+            </q-item-section>
+          </q-item>
+          <q-separator inset="item" />
           <q-item clickable v-ripple>
             <q-item-section avatar>
               <q-avatar
@@ -46,9 +60,9 @@
               />
             </q-item-section>
             <q-item-section>Notifications</q-item-section>
-                         <q-item-section side>
-               <q-icon name="fas fa-angle-right" class="side"/>
-             </q-item-section>
+            <q-item-section side>
+              <q-icon name="fas fa-angle-right" class="side" />
+            </q-item-section>
           </q-item>
         </q-list>
       </q-card>
@@ -73,25 +87,25 @@
 </template>
 
 <style scoped>
-.q-header .profile-info {
+.header .profile-info {
   margin: 1em 0;
   text-align: center;
 }
-.q-header .user {
+.header .user {
   margin-top: 0.36em;
 }
-.q-header .nickname {
+.header .nickname {
   font-size: 28px;
   font-weight: 700;
 }
-.q-header .username {
+.header .username {
   color: darkgray;
 }
 .content {
   font-size: 13px;
 }
 .content .q-avatar {
-  margin: 0.3000rem 0 !important;
+  margin: 0.3rem 0 !important;
   padding: 0 !important;
   font-size: 28px !important;
 }
