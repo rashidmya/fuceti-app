@@ -3,7 +3,10 @@
     <the-header>
       <template #default> Chats </template>
       <template #action>
-        <q-icon name="fas fa-user-plus" @click="addUserDialog  = !addUserDialog"></q-icon>
+        <q-icon
+          name="fas fa-user-plus"
+          @click="addUserDialog = !addUserDialog"
+        ></q-icon>
       </template>
     </the-header>
 
@@ -37,29 +40,42 @@
         </div>
       </q-list>
     </div>
-    <FindDialog
+    <AddDialog
       @closeDialog="addUserDialog = !addUserDialog"
       :showDialog="addUserDialog"
+    ></AddDialog>
+
+     <FindDialog
+      @closeDialog="findUserDialog = !findUserDialog"
+      :showDialog="findUserDialog"
     ></FindDialog>
+
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn fab icon="fas fa-pencil-alt" color="blue-6" @click="findUserDialog = !findUserDialog" />
+    </q-page-sticky>
+
   </div>
 </template>
 
 <script lang="ts">
 import TheHeader from "../../components/layouts/TheHeader.vue";
 import FindDialog from "../../components/ui/FindDialog.vue";
+import AddDialog from "../../components/ui/AddDialog.vue";
 import { defineComponent, ref } from "vue";
-
 
 export default defineComponent({
   components: {
     TheHeader,
-    FindDialog
+    FindDialog,
+    AddDialog
   },
   setup() {
     const addUserDialog = ref(false);
+    const findUserDialog = ref(false);
 
     return {
-      addUserDialog 
+      addUserDialog,
+      findUserDialog
     };
   },
 });
