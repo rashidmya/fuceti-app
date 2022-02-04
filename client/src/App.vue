@@ -1,19 +1,18 @@
 <template>
-  <q-layout
-    view="hHh lpR fFf"
-  >
-    <BottomNav v-if="isLoggedIn"></BottomNav>
-
-    <q-page-container>
-      <q-page padding>
-        <router-view></router-view>
-      </q-page>
-    </q-page-container>
-  </q-layout>
+  <div class="WAL relative-position" :style="style">
+    <q-layout view="hHh lpR fFf"  container>
+      <q-page-container>
+        <q-page padding>
+          <router-view></router-view>
+        </q-page>
+      </q-page-container>
+       <BottomNav></BottomNav>
+    </q-layout>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 import BottomNav from "./components/layouts/BottomNav.vue";
 import { useQuasar } from "quasar";
 import { useStore } from "./store";
@@ -25,17 +24,32 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const store = useStore();
-    const isLoggedIn = computed(() => store.getters.isLoggedIn)
+    
     $q.dark.set(true);
+    const isLoggedIn = computed(() => store.getters.isLoggedIn);
+    const style = computed(() => ({
+      height: $q.screen.height + 'px'
+    }))
+    
     return {
-      isLoggedIn
-    }
-  }
-})
+      isLoggedIn,
+      style
+    };
+  },
+});
 </script>
 
 
 <style lang="scss">
+.WAL {
+  width: 100%;
+  height: 100%;
+}
+.WAL__layout {
+  margin: 0 auto;
+  z-index: 4000;
+  height: 100%;
+}
 #app {
   font-family: Roboto, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
