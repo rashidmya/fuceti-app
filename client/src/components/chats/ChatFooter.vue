@@ -66,7 +66,7 @@ z-index: 2;
   margin-bottom: 6px;
 }
 .message-form {
-  padding: 15px 0;
+  padding: 7px 0;
 }
 .q-input .action-button {
   margin: 0 10px;
