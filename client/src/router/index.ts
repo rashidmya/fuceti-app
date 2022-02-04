@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Homepage from "../views/Homepage.vue";
 import ChatsIndex from "../views/chats/index.vue";
 import ChatsShow from "../views/chats/show.vue";
 import Login from "../views/Login.vue";
@@ -10,7 +9,7 @@ import { store } from "../store";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", component: Homepage, meta: { requiresAuth: true } },
+    { path: "/", redirect: "/chats" },
     { path: "/chats", component: ChatsIndex, meta: { requiresAuth: true } },
     {
       name: "chat",
