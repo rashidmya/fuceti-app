@@ -25,7 +25,7 @@
 
             <q-item-section>
               <q-item-label lines="1">Emma</q-item-label>
-              <q-item-label caption lines="2">
+              <q-item-label caption lines="1">
                 I'll be in your neighborhood doing errands this weekend. Do you
                 want to grab brunch?
               </q-item-label>
