@@ -9,7 +9,7 @@ import { store } from "../store";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", redirect: "/chats" },
+    { name: "home", path: "/", redirect: "/chats" },
     { path: "/chats", component: ChatsIndex, meta: { requiresAuth: true } },
     {
       name: "chat",
@@ -19,7 +19,12 @@ const router = createRouter({
     },
     { path: "/friends", component: FriendsIndex, meta: { requiresAuth: true } },
     { path: "/settings", component: Settings, meta: { requiresAuth: true } },
-    { path: "/login", component: Login },
+    {
+      name: "login",
+      path: "/login",
+      component: Login,
+      meta: { requiresGuest: true },
+    },
   ],
   scrollBehavior() {
     return { top: 0 };
@@ -27,14 +32,20 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const auth = store.getters.isLoggedIn
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!store.getters.isLoggedIn) {
+    if (!auth) {
       next({ name: "login" });
     } else {
       next();
     }
-  } else {
-    next();
+  } else if (to.matched.some((record) => record.meta.requiresGuest)) {
+    if (auth) {
+      next({name: 'home'})
+    } else {
+      next()
+    }
   }
 });
 
