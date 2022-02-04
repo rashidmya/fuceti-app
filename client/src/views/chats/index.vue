@@ -7,7 +7,7 @@
       </template>
     </the-header>
 
-    <div class="content">
+    <div class="chat-list">
       <q-list padding separator>
         <div v-for="r in 15" :key="r" class="">
           <q-item
