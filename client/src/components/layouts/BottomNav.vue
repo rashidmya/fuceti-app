@@ -7,17 +7,12 @@
       class="bg-dark text-grey"
       v-model="tab"
     >
-      <q-route-tab to="/" name="home">
-        <q-icon name="fas fa-info-circle" />
-      </q-route-tab>
       <q-route-tab to="/friends" name="friends">
         <q-icon name="fas fa-user-friends" /> Friends
       </q-route-tab>
       <q-route-tab to="/chats" name="chats">
         <q-icon name="fas fa-comment-alt">
-          <q-badge v-if="notificationCount" color="red" rounded floating align="top">
-            {{ notificationCount }}
-          </q-badge>
+          <q-badge v-if="notificationCount" color="red" rounded floating :label="notificationCount" />
         </q-icon>
         Chats
       </q-route-tab>
@@ -52,5 +47,8 @@ export default defineComponent({
 .q-tab {
   padding: 6px 0;
   font-size: 12px;
+}
+.q-badge {
+    font-family: Roboto, Avenir, Helvetica, Arial, sans-serif;
 }
 </style>
