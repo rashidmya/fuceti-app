@@ -58,6 +58,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.q-footer {
+z-index: 2;
+}
 .q-footer .message-input {
   color: black !important;
   margin-bottom: 6px;

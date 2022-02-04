@@ -41,6 +41,9 @@ export default defineComponent({
 
 
 <style scoped>
+.q-footer {
+  z-index: 0;
+}
 .fas {
   font-size: 20px;
 }
