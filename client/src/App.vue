@@ -6,7 +6,7 @@
           <router-view></router-view>
         </q-page>
       </q-page-container>
-       <BottomNav></BottomNav>
+       <BottomNav v-if="isLoggedIn"></BottomNav>
     </q-layout>
   </div>
 </template>

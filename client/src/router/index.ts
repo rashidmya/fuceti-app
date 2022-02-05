@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ChatsIndex from "../views/chats/index.vue";
 import ChatsShow from "../views/chats/show.vue";
-import Login from "../views/Login.vue";
+import Auth from "../views/Auth.vue";
 import FriendsIndex from "../views/friends/index.vue";
 import Settings from "../views/Settings.vue";
 import { store } from "../store";
@@ -20,9 +20,9 @@ const router = createRouter({
     { path: "/friends", component: FriendsIndex, meta: { requiresAuth: true } },
     { path: "/settings", component: Settings, meta: { requiresAuth: true } },
     {
-      name: "login",
-      path: "/login",
-      component: Login,
+      name: "auth",
+      path: "/auth",
+      component: Auth,
       meta: { requiresGuest: true },
     },
   ],
