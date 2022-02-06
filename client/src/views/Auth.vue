@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Login v-if="form === 0" />
-    <Register v-else />
+    <Login v-if="form === 0" @changeAuthMode="changeForm" @login="login" />
+    <Register v-else  @changeAuthMode="changeForm" @register="register" />
   </div>
 </template>
 
@@ -9,11 +9,6 @@
 import { defineComponent, ref } from "vue";
 import Login from "../components/auth/Login.vue";
 import Register from "../components/auth/Register.vue";
-
-enum FormMode {
-  Login = 0,
-  Register = 1,
-}
 
 export default defineComponent({
   name: "User Authentication",
@@ -32,12 +27,38 @@ export default defineComponent({
       }
     }
 
+    function register(data: Register){
+      console.log(data);
+    }
+
+    function login(data: Login){
+      console.log(data)
+    }
+
     return {
       form,
-      changeForm
+      changeForm,
+      register,
+      login
     };
   },
 });
+
+enum FormMode {
+  Login = 0,
+  Register = 1,
+}
+
+interface Register {
+  email: string,
+  password: string,
+  username: string
+}
+
+interface Login {
+  username: string,
+  password: string
+}
 </script>
 
 <style scoped>

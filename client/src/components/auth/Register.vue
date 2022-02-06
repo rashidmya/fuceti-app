@@ -3,7 +3,15 @@
     <div class="header row">
       <h4 class="inline q-mx-auto">Register</h4>
     </div>
-    <q-form>
+    <q-form @submit.prevent="register">
+           <q-input
+        v-model="email"
+        label="Email"
+        type="email"
+        lazy-rules
+        :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+      />
+
       <q-input
         v-model="username"
         label="Username"
@@ -28,11 +36,14 @@
       </q-input>
 
       <div class="actions">
-        <q-btn label="Login" type="submit" color="primary" class="full-width" />
+        <q-btn label="Create Account" type="submit" color="primary" class="full-width" />
       </div>
     </q-form>
     <p>
-      Already have an account? <a>Login</a>
+      Already have an account?
+      <q-btn flat color="warning" @click="$emit('changeAuthMode')"
+        >Login</q-btn
+      >
     </p>
   </div>
 </template>
@@ -40,18 +51,30 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
-
 export default defineComponent({
   name: "Register",
-  setup() {
+  emits: ['changeAuthMode', 'register'],
+  setup(_, {emit}) {
     const username = ref("");
     const password = ref("");
+    const email = ref("");
     const isPwd = ref(true);
-    
+
+    function register(){
+      const user = {
+        email: email.value,
+        username: username.value,
+        password: password.value
+      }
+      emit('register', user)
+    }
+
     return {
+      email,
       username,
       password,
-      isPwd
+      isPwd,
+      register
     };
   },
 });
