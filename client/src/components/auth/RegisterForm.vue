@@ -52,7 +52,7 @@
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  name: "Register",
+  name: "RegisterForm",
   emits: ['changeAuthMode', 'register'],
   setup(_, {emit}) {
     const username = ref("");

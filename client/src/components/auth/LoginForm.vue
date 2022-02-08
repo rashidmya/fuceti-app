@@ -44,7 +44,7 @@
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  name: "Login",
+  name: "LoginForm",
   emits: ["changeAuthMode", 'login'],
   setup(_, {emit}) {
     const username = ref("");
