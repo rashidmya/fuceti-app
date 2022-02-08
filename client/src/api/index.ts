@@ -1,23 +1,19 @@
+import axios, { AxiosResponse } from "axios";
+
 class API {
   url: string;
 
   constructor() {
-    this.url = process.env.CLIENT_URL || "http://localhost:3000";
+    this.url = process.env.CLIENT_URL || "/api/auth";
   }
 
-  async post(route: string, data: any) {
-    const options = {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    };
-    
-    const res = await fetch(this.url + route, options);
-    const json = await res.json();
-    return json
+  async post(route: string, body: any) {
+    const res: AxiosResponse = await axios.post(this.url + route, body, {
+      withCredentials: true,
+    });
+    const { data } = res;
+    return data;
   }
 }
 
-export default new API
+export default new API();
