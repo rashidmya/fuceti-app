@@ -1,64 +1,76 @@
 <template>
   <div>
-    <Login v-if="form === 0" @changeAuthMode="changeForm" @login="login" />
-    <Register v-else  @changeAuthMode="changeForm" @register="register" />
+    <LoginForm
+      v-if="form === 0"
+      @changeAuthMode="changeForm"
+      @login="login"
+    ></LoginForm>
+    <RegisterForm
+      v-else
+      @changeAuthMode="changeForm"
+      @register="register"
+    ></RegisterForm>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import Login from "../components/auth/Login.vue";
-import Register from "../components/auth/Register.vue";
+import LoginForm from "../components/auth/LoginForm.vue";
+import RegisterForm from "../components/auth/RegisterForm.vue";
+import { useStore } from "vuex";
+import { key } from "../store";
+
+enum FormMode {
+  Login = 0,
+  Register = 1
+}
+
+interface SignUp {
+  email: string;
+  password: string;
+  username: string;
+}
+
+interface SignIn {
+  username: string;
+  password: string;
+}
 
 export default defineComponent({
-  name: "User Authentication",
+  name: "Auth",
   components: {
-    Login,
-    Register,
+    LoginForm,
+    RegisterForm,
   },
   setup() {
+    const store = useStore(key);
     const form = ref(FormMode.Login);
 
-    function changeForm(){
-      if (form.value === FormMode.Register){
-        form.value = FormMode.Login
+    function changeForm() {
+      if (form.value === FormMode.Register) {
+        form.value = FormMode.Login;
       } else {
-        form.value = FormMode.Register
+        form.value = FormMode.Register;
       }
     }
 
-    function register(data: Register){
-      console.log(data);
+    async function register(data: SignUp) {
+      await store.dispatch("register", data);
     }
-
-    function login(data: Login){
-      console.log(data)
+    
+    function login(data: SignIn) {
+      store.dispatch("login", data);
     }
 
     return {
       form,
       changeForm,
       register,
-      login
+      login,
     };
   },
 });
 
-enum FormMode {
-  Login = 0,
-  Register = 1,
-}
-
-interface Register {
-  email: string,
-  password: string,
-  username: string
-}
-
-interface Login {
-  username: string,
-  password: string
-}
 </script>
 
 <style scoped>

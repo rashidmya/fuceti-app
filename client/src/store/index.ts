@@ -1,8 +1,9 @@
 import { InjectionKey } from "vue";
 import { createStore, useStore as baseUseStore, Store } from "vuex";
+import API from '../api'
 
 export interface State {
-    loggedIn: Boolean
+    loggedIn: boolean
   }
 
 export const key: InjectionKey<Store<State>> = Symbol();
@@ -15,13 +16,22 @@ export const store = createStore<State>({
     },
     mutations: {
         login(state){
-            state.loggedIn = true
-            console.log(state.loggedIn);
+            state.loggedIn = false
+        },
+        register(state){
+            state.loggedIn = false
         }
     },
     actions: {
-        login({commit}){
-            commit('login')
+        async login({commit}, payload){
+            const res = await API.post('/login', payload)
+            console.log(res);
+            commit('login',)
+        },
+        async register({commit}, payload){
+            const res = await API.post('/register', payload)
+            console.log(res);
+            commit('register')
         }
     },
     getters: {
