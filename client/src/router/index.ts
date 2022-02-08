@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
-import ChatsIndex from "../views/chats/index.vue";
-import ChatsShow from "../views/chats/show.vue";
+import ChatsIndex from "../views/chats/ChatsIndex.vue";
+import ChatsShow from "../views/chats/ChatsShow.vue";
 import Auth from "../views/Auth.vue";
-import FriendsIndex from "../views/friends/index.vue";
+import FriendsIndex from "../views/friends/FriendsIndex.vue";
 import Settings from "../views/Settings.vue";
 import { store } from "../store";
 
