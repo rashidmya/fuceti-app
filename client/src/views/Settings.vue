@@ -78,13 +78,37 @@
                 icon="fas fa-sign-out-alt"
               />
             </q-item-section>
-            <q-item-section>Logout</q-item-section>
+            <q-item-section @click="logout">Logout</q-item-section>
           </q-item>
         </q-list>
       </q-card>
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import { useStore } from '../store/store';
+import { useRouter } from "vue-router";
+
+export default defineComponent({
+  name: "SettingsPage",
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    function logout() {
+      store.dispatch("logout");
+      router.replace('/auth')
+    }
+
+    return {
+      logout,
+    };
+  },
+});
+</script>
+
 
 <style scoped>
 .header .profile-info {

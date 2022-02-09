@@ -8,8 +8,6 @@ import http from "http";
 import cors, { CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import users from "./routes/auth.route";
-import { authenticate } from "./middlewares/auth.middleware";
-import { RequestWithUser } from "./interfaces/auth.interface";
 
 const app = express();
 const server = http.createServer(app);

@@ -1,12 +1,12 @@
 <template>
   <div class="WAL relative-position" :style="style">
-    <q-layout view="hHh lpR fFf"  container>
+    <q-layout view="hHh lpR fFf" container>
       <q-page-container>
         <q-page padding>
           <router-view></router-view>
         </q-page>
       </q-page-container>
-       <BottomNav v-if="isLoggedIn"></BottomNav>
+      <BottomNav v-if="isLoggedIn"></BottomNav>
     </q-layout>
   </div>
 </template>
@@ -15,7 +15,7 @@
 import { defineComponent } from "vue";
 import BottomNav from "./components/layouts/BottomNav.vue";
 import { useQuasar } from "quasar";
-import { useStore } from "./store";
+import { useStore } from "./store/store";
 import { computed } from "vue";
 
 export default defineComponent({
@@ -24,16 +24,19 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const store = useStore();
-    
+
+    store.dispatch("auth/verify");
+    store.dispatch("auth/autoLogin");
+
     $q.dark.set(true);
     const isLoggedIn = computed(() => store.getters.isLoggedIn);
     const style = computed(() => ({
-      height: $q.screen.height + 'px'
-    }))
-    
+      height: $q.screen.height + "px",
+    }));
+
     return {
       isLoggedIn,
-      style
+      style,
     };
   },
 });

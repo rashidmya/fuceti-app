@@ -18,11 +18,12 @@ import { defineComponent, ref } from "vue";
 import LoginForm from "../components/auth/LoginForm.vue";
 import RegisterForm from "../components/auth/RegisterForm.vue";
 import { useStore } from "vuex";
-import { key } from "../store";
+import { key } from "../store/store";
+import { useRouter } from "vue-router";
 
 enum FormMode {
   Login = 0,
-  Register = 1
+  Register = 1,
 }
 
 interface SignUp {
@@ -37,7 +38,7 @@ interface SignIn {
 }
 
 export default defineComponent({
-  name: "Auth",
+  name: "AuthPage",
   components: {
     LoginForm,
     RegisterForm,
@@ -45,6 +46,7 @@ export default defineComponent({
   setup() {
     const store = useStore(key);
     const form = ref(FormMode.Login);
+    const router = useRouter();
 
     function changeForm() {
       if (form.value === FormMode.Register) {
@@ -55,11 +57,21 @@ export default defineComponent({
     }
 
     async function register(data: SignUp) {
-      await store.dispatch("register", data);
+      try {
+        await store.dispatch("auth/register", data);
+        router.go(0)
+      } catch (e) {
+        console.log(e);
+      }
     }
-    
-    function login(data: SignIn) {
-      store.dispatch("login", data);
+
+    async function login(data: SignIn) {
+      try {
+        await store.dispatch("auth/login", data);
+        router.go(0)
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     return {
@@ -70,7 +82,6 @@ export default defineComponent({
     };
   },
 });
-
 </script>
 
 <style scoped>

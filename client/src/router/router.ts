@@ -4,7 +4,7 @@ import ChatsShow from "../views/chats/ChatsShow.vue";
 import Auth from "../views/Auth.vue";
 import FriendsIndex from "../views/friends/FriendsIndex.vue";
 import Settings from "../views/Settings.vue";
-import { store } from "../store";
+import { store } from "../store/store";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -32,7 +32,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const auth = store.getters.isLoggedIn
+  const auth = store.getters.isLoggedIn;
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!auth) {
@@ -42,9 +42,9 @@ router.beforeEach((to, from, next) => {
     }
   } else if (to.matched.some((record) => record.meta.requiresGuest)) {
     if (auth) {
-      next({name: 'home'})
+      next({ name: "home" });
     } else {
-      next()
+      next();
     }
   }
 });
