@@ -30,8 +30,7 @@ app.use(cookieParser());
 
 app.use("/api/auth/", users);
 
-app.get("/", authenticate, (req: RequestWithUser, res: any) => {
-  console.log(req.user);
+app.get("/", (req, res) => {
   res.status(200).send("Hello World!");
 });
 
