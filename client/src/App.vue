@@ -29,7 +29,7 @@ export default defineComponent({
     store.dispatch("auth/autoLogin");
 
     $q.dark.set(true);
-    const isLoggedIn = computed(() => store.getters.isLoggedIn);
+    const isLoggedIn = computed(() => store.getters['auth/isLoggedIn']);
     const style = computed(() => ({
       height: $q.screen.height + "px",
     }));

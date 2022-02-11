@@ -32,7 +32,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const auth = store.getters.isLoggedIn;
+  const auth = store.getters['auth/isLoggedIn'];
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!auth) {
