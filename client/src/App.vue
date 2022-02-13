@@ -32,7 +32,7 @@ export default defineComponent({
     const isLoggedIn = computed(() => store.getters["auth/isLoggedIn"]);
     const userId = computed(() => store.getters["auth/userId"]);
 
-    socket.auth = { userId: userId.value };
+    socket.auth = { username: userId.value };
     socket.connect();
 
     socket.on("connect_error", (err) => {

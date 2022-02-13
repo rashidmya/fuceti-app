@@ -7,18 +7,13 @@
       class="bg-dark text-grey"
       v-model="tab"
     >
-      <q-route-tab to="/friends" name="friends">
-        <q-icon name="fas fa-user-friends" /> Friends
-      </q-route-tab>
       <q-route-tab to="/chats" name="chats">
         <q-icon name="fas fa-comment-alt">
           <q-badge v-if="notificationCount" color="red" rounded floating :label="notificationCount" />
         </q-icon>
         Chats
       </q-route-tab>
-      <q-route-tab to="/settings" name="settings">
-        <q-icon name="fas fa-cog" /> Settings
-      </q-route-tab>
+
     </q-tabs>
   </q-footer>
 </template>

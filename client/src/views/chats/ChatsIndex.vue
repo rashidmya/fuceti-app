@@ -1,47 +1,59 @@
 <template>
   <div class="container">
-    <the-header>
-      <template #default> Chats </template>
-      <template #action>
-        <q-icon
-          name="fas fa-user-plus"
-          @click="addUserDialog = !addUserDialog"
-        ></q-icon>
-      </template>
-    </the-header>
+    <div class="users-list" v-if="!userSelected">
+      <the-header>
+        <template #default> Chats </template>
+        <template #action>
+          <q-icon
+            name="fas fa-user-plus"
+            @click="addUserDialog = !addUserDialog"
+          ></q-icon>
+        </template>
+      </the-header>
 
-    <div class="chat-list">
-      <q-list padding separator>
-        <div v-for="user in users.users" :key="user.userId" class="">
-          <router-link :to="{ name: 'chat', params: { id: user.userId } }">
-          <q-item
-            clickable
-            v-ripple
-            dense
-          >
-            <q-item-section avatar>
-              <q-avatar>
-                <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
-                <q-badge color="red" rounded floating v-if="user.hasNewMessages"/>
-              </q-avatar>
-            </q-item-section>
+      <div class="chat-list">
+        <q-list padding separator>
+          <div v-for="user in users" :key="user.userId" class="">
+            <router-link
+              :to="{ name: 'chat', params: { id: user.userId } }"
+              @click="userSelected = true"
+            >
+              <q-item clickable v-ripple dense>
+                <q-item-section avatar>
+                  <q-avatar>
+                    <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
+                    <q-badge
+                      color="red"
+                      rounded
+                      floating
+                      v-if="user.hasNewMessages"
+                    />
+                  </q-avatar>
+                </q-item-section>
 
-            <q-item-section>
-              <q-item-label lines="1">Emma</q-item-label>
-              <q-item-label caption lines="1">
-                I'll be in your neighborhood doing errands this weekend. Do you
-                want to grab brunch?
-              </q-item-label>
-            </q-item-section>
+                <q-item-section>
+                  <q-item-label lines="1">{{ user.userId }}</q-item-label>
+                  <q-item-label caption lines="1">
+                    I'll be in your neighborhood doing errands this weekend. Do
+                    you want to grab brunch?
+                  </q-item-label>
+                </q-item-section>
 
-            <q-item-section side top> 1 min ago </q-item-section>
-          </q-item>
-           </router-link>
-          <q-separator spaced inset="item" />
-        </div>
-      </q-list>
-    </div>
-    <AddDialog
+                <q-item-section side top>
+                  <q-icon
+                    name="fas fa-circle"
+                    class="status-icon"
+                    :class="{ online: user.connected }"
+                  />
+                </q-item-section>
+              </q-item>
+            </router-link>
+            <q-separator spaced inset="item" />
+          </div>
+        </q-list>
+      </div>
+
+          <AddDialog
       @closeDialog="addUserDialog = !addUserDialog"
       :showDialog="addUserDialog"
     ></AddDialog>
@@ -59,6 +71,10 @@
         @click="findUserDialog = !findUserDialog"
       />
     </q-page-sticky>
+    </div>
+    <div class="chat-window" v-else>
+      <router-view @unselect="userSelected = false"></router-view>
+    </div>
   </div>
 </template>
 
@@ -66,23 +82,11 @@
 import TheHeader from "../../components/layouts/TheHeader.vue";
 import FindDialog from "../../components/ui/FindDialog.vue";
 import AddDialog from "../../components/ui/AddDialog.vue";
-import { defineComponent, reactive, ref } from "vue";
-import socket from "@/utils/socket";
+import { defineComponent, ref, onUnmounted, computed } from "vue";
+import { useStore } from "../../store/store";
+import socket from "../../utils/socket";
 
-interface UsersReactive {
-      connected: boolean;
-      messages: Array<string>;
-      hasNewMessages: boolean; 
-}
-
-interface UsersEvent extends UsersReactive {
-    self: boolean;
-    userId: string;
-}
-
-interface UsersList {
-  users: Array<UsersEvent>
-}
+import { UsersEvent } from "../../interfaces/user.interface";
 
 export default defineComponent({
   components: {
@@ -91,40 +95,61 @@ export default defineComponent({
     AddDialog,
   },
   setup() {
+    const userSelected = ref(false);
     const addUserDialog = ref(false);
     const findUserDialog = ref(false);
-    let users: UsersList = reactive({users:[]})
+    const store = useStore();
+    const users = computed(() => store.getters["user/getUsers"]);
 
-     const initReactiveProperties = (user: UsersReactive) => {
-      user.connected = true;
-      user.messages = [];
-      user.hasNewMessages = false;
-    };
-
-    socket.on('users', (allUsers: Array<UsersEvent>) => {
-      allUsers.forEach(user => {
-        user.self = user.userId === socket.auth.userId
-        initReactiveProperties(user)
-      })
-
-      users.users = allUsers.sort((a:any,b:any) => {
-        if (a.self) return -1;
-        if (b.self) return 1;
-        if (a.userId < b.userId) return -1;
-        return a.userId > b.userId ? 1 : 0
-      });
+    socket.on("connect", () => {
+      store.dispatch("user/connect");
     });
 
-    socket.on('user connected', user => {
-      initReactiveProperties(user);
-      users.users.push(user)
-    })
+    socket.on("disconnect", () => {
+      store.dispatch("user/disconnect");
+    });
 
+    socket.on("users", (allUsers: Array<UsersEvent>) => {
+      store.dispatch("user/users", { allUsers, socket });
+    });
+
+    socket.on("user connected", (user: any) => {
+      store.dispatch("user/userConnected", user);
+    });
+
+    socket.on("user disconnected", (id: any) => {
+      store.dispatch("user/userDisconnected", id);
+    });
+
+    onUnmounted(() => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("users");
+      socket.off("user connected");
+      socket.off("user disconnected");
+      socket.off("private message");
+    });
     return {
       addUserDialog,
       findUserDialog,
-      users
+      users,
+      userSelected,
     };
   },
 });
 </script>
+
+<style scoped>
+.status {
+  font-weight: 400;
+  font-size: 12px;
+  color: gray;
+}
+.status-icon {
+  font-size: 8px;
+  color: red;
+}
+.status-icon.online {
+  color: green;
+}
+</style>

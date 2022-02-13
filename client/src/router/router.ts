@@ -2,23 +2,23 @@ import { createRouter, createWebHistory } from "vue-router";
 import ChatsIndex from "../views/chats/ChatsIndex.vue";
 import ChatsShow from "../views/chats/ChatsShow.vue";
 import Auth from "../views/Auth.vue";
-import FriendsIndex from "../views/friends/FriendsIndex.vue";
-import Settings from "../views/Settings.vue";
 import { store } from "../store/store";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { name: "home", path: "/", redirect: "/chats" },
-    { path: "/chats", component: ChatsIndex, meta: { requiresAuth: true } },
     {
-      name: "chat",
-      path: "/chats/:id",
-      component: ChatsShow,
+      path: "/",
+      component: ChatsIndex,
       meta: { requiresAuth: true },
+      children: [
+        {
+          name: "chat",
+          path: "/:id",
+          component: ChatsShow,
+        },
+      ],
     },
-    { path: "/friends", component: FriendsIndex, meta: { requiresAuth: true } },
-    { path: "/settings", component: Settings, meta: { requiresAuth: true } },
     {
       name: "auth",
       path: "/auth",
@@ -32,7 +32,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const auth = store.getters['auth/isLoggedIn'];
+  const auth = store.getters["auth/isLoggedIn"];
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!auth) {

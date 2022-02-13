@@ -41,28 +41,41 @@ app.get("/", (req, res) => {
 });
 
 io.use((socket: UserSocket, next) => {
-  const userId = socket.handshake.auth.userId;
-  if (!userId) {
+  const username = socket.handshake.auth.username;
+  if (!username) {
     return next(new Error("not logged in"));
   }
-  socket.userId = userId;
+  socket.username = username;
   next();
 });
 
 io.on("connection", (socket) => {
   // fetch existing users
   const users = [];
-  for (let [_, socket] of io.of("/").sockets) {
+  for (let [id, socket] of io.of("/").sockets) {
     users.push({
-      userId: (<UserSocket>socket).userId,
+      userId: id,
+      username: (<UserSocket>socket).username
     });
   }
   socket.emit("users", users);
 
   //notify existing useeres
   socket.broadcast.emit('user connected', {
-    userId: (<UserSocket>socket).userId
+    userId: (<UserSocket>socket).id,
+    username: (<UserSocket>socket).username
   })
+
+  socket.on('private message', ({msg, to}) => {
+    socket.to(to).emit('private message', {
+      msg,
+      from: socket.id
+    })
+  })
+  
+socket.on('disconnect', ()=> {
+  socket.broadcast.emit('user disconnected', socket.id)
+})
 });
 
 server.listen(port, () => console.log(`listening on ${port}`));

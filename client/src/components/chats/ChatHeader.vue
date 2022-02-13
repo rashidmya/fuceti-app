@@ -1,13 +1,13 @@
 <template>
   <q-header class="bg-dark fixed-top">
     <div class="row inline full-width">
-      <router-link class="button" to="/chats">
+      <q-btn class="button" to="/" @click="$emit('unselect')">
         <q-icon
           style="font-size: 20px"
           color="primary"
           name="fas fa-chevron-left q-my-md q-mx-md"
         />
-      </router-link>
+      </q-btn>
       <div class="profile row inline q-ml-xs">
         <q-avatar>
           <img src="https://cdn.quasar.dev/img/avatar.png" />
