@@ -10,7 +10,7 @@
       </template>
     </the-header>
 
-    <div class="content">
+    <div class="friend-list">
       <div class="search-bar-container">
         <q-input
           class="search-bar"
@@ -31,7 +31,7 @@
       </div>
       <div class="friends-list">
         <q-list dark separator>
-          <q-item clickable v-ripple v-for="x in 16" :key="x">
+          <q-item clickable v-ripple v-for="x in 9" :key="x">
             <q-item-section avatar>
               <q-avatar>
                 <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
@@ -45,23 +45,23 @@
         </q-list>
       </div>
     </div>
-    <FindDialog
+    <AddDialog
       @closeDialog="addUserDialog = !addUserDialog"
       :showDialog="addUserDialog"
-    ></FindDialog>
+    ></AddDialog>
   </div>
 </template>
 
 
 <script lang="ts">
 import TheHeader from "../../components/layouts/TheHeader.vue";
-import FindDialog from "../../components/ui/FindDialog.vue";
+import AddDialog from "../../components/ui/AddDialog.vue";
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   components: {
     TheHeader,
-    FindDialog,
+    AddDialog,
   },
   setup() {
     const addUserDialog = ref(false);

@@ -6,6 +6,7 @@ dist
 # local env files
 .env.local
 .env.*.local
+.env
 
 # Log files
 npm-debug.log*
@@ -24,4 +25,4 @@ pnpm-debug.log*
 
 
 # other files
-auth_config.json
+fuceti-app.code-workspace

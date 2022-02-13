@@ -1,15 +1,13 @@
 <template>
   <q-header class="bg-dark fixed-top">
     <div class="row inline full-width">
-      <div class="back-button">
-        <router-link class="button" to="/chats">
-          <q-icon
-            style="font-size: 20px"
-            color="primary"
-            name="fas fa-chevron-left q-my-md q-mx-md"
-          />
-        </router-link>
-      </div>
+      <router-link class="button" to="/chats">
+        <q-icon
+          style="font-size: 20px"
+          color="primary"
+          name="fas fa-chevron-left q-my-md q-mx-md"
+        />
+      </router-link>
       <div class="profile row inline q-ml-xs">
         <q-avatar>
           <img src="https://cdn.quasar.dev/img/avatar.png" />
@@ -26,7 +24,7 @@
           </div>
         </div>
       </div>
-      <div class="call-buttons full">
+      <div class="call-buttons">
         <div class="row inline">
           <q-icon color="primary" name="fas fa-video" class="call" />
           <q-icon color="primary" name="fas fa-phone" class="call" />
@@ -37,11 +35,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  props: ['userOnline']
-})
+  props: ["userOnline"],
+});
 </script>
 
 
@@ -77,6 +75,10 @@ export default defineComponent({
 }
 .q-header .call-buttons .call {
   font-size: 20px;
-  margin: 0 8px 0 18px;
+  margin: 0 10px 0 10px;
+}
+.q-header .call-buttons .call:active {
+  color: #6caae0 !important;
+  transition: all 0.1s ease-in;
 }
 </style>

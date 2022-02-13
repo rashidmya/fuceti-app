@@ -5,28 +5,23 @@
         <q-input
           rounded
           v-model.trim="newMessage"
-          placeholder="Message"
           class="message-input"
           dense
           outlined
         >
-        <template #append>
-                      <q-btn
-              round
-              dense
-              flat
-              @submit.prevent="sendMessage"
-              icon="camera"
+          <template #before>
+            <q-icon
+              @click.prevent="sendMessage"
+              class="action-button"
+              name="fas fa-camera"
               color="primary"
             />
-        </template>
+          </template>
           <template #after>
-            <q-btn
-              round
-              dense
-              flat
-              @submit.prevent="sendMessage"
-              icon="send"
+            <q-icon
+              class="action-button send"
+              @click.prevent="sendMessage"
+              name="send"
               color="primary"
             />
           </template>
@@ -37,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 
 export default defineComponent({
   emits: ["newMessage"],
@@ -45,20 +40,43 @@ export default defineComponent({
     const newMessage = ref("");
 
     function sendMessage() {
-            if (newMessage.value === "") return;
+      if (newMessage.value === "") return;
       emit("newMessage", newMessage);
-      newMessage.value = ''
+      newMessage.value = "";
     }
+
+    onMounted(() => {
+      (document.querySelector(".message-input")! as HTMLInputElement).focus();
+    });
+
     return {
       sendMessage,
-      newMessage
+      newMessage,
     };
   },
 });
 </script>
 
 <style scoped>
+.q-footer {
+z-index: 2;
+}
 .q-footer .message-input {
   color: black !important;
+  margin-bottom: 6px;
+}
+.message-form {
+  padding: 7px 0;
+}
+.q-input .action-button {
+  margin: 0 10px;
+  font-size: 20px;
+}
+.q-input .action-button.send {
+  font-size: 25px;
+}
+.q-input .action-button:active{
+   color: #6caae0 !important;
+   transition: all 0.1s ease-in;
 }
 </style>

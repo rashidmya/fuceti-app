@@ -19,8 +19,8 @@
       </q-card-section>
 
       <q-card-section class="q-pt-none">
+          FINDDDDDDDDDDDDDDDDDDDDDD
         <q-input v-model="findUserInput" label="Standard" />
-        <button @click="addUser">Add</button>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -28,32 +28,17 @@
 
 <script lang="ts">
 import { defineComponent, toRef, ref } from "vue";
-import { useQuasar } from "quasar";
 
 export default defineComponent({
   props: ["showDialog"],
   emits: ["closeDialog"],
   setup(props, { emit }) {
-    const $q = useQuasar();
-    
     const prompt = toRef(props, "showDialog");
     const findUserInput = ref("");
-
-    function addUser() {
-      findUserInput.value = "";
-      emit("closeDialog");
-
-      $q.notify({
-        badgeClass: "alert-badge",
-        message: "Friend request has been sent!",
-        position: 'top'
-      });
-    }
 
     return {
       prompt,
       findUserInput,
-      addUser,
       emit,
     };
   },

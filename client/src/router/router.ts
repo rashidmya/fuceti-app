@@ -1,16 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Homepage from "../views/Homepage.vue";
-import ChatsIndex from "../views/chats/index.vue";
-import ChatsShow from "../views/chats/show.vue";
-import Login from "../views/Login.vue";
-import FriendsIndex from "../views/friends/index.vue";
+import ChatsIndex from "../views/chats/ChatsIndex.vue";
+import ChatsShow from "../views/chats/ChatsShow.vue";
+import Auth from "../views/Auth.vue";
+import FriendsIndex from "../views/friends/FriendsIndex.vue";
 import Settings from "../views/Settings.vue";
-import { store } from "../store";
+import { store } from "../store/store";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", component: Homepage, meta: { requiresAuth: true } },
+    { name: "home", path: "/", redirect: "/chats" },
     { path: "/chats", component: ChatsIndex, meta: { requiresAuth: true } },
     {
       name: "chat",
@@ -20,7 +19,12 @@ const router = createRouter({
     },
     { path: "/friends", component: FriendsIndex, meta: { requiresAuth: true } },
     { path: "/settings", component: Settings, meta: { requiresAuth: true } },
-    { path: "/login", component: Login },
+    {
+      name: "auth",
+      path: "/auth",
+      component: Auth,
+      meta: { requiresGuest: true },
+    },
   ],
   scrollBehavior() {
     return { top: 0 };
@@ -28,14 +32,20 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const auth = store.getters['auth/isLoggedIn'];
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!store.getters.isLoggedIn) {
-      next({ name: "login" });
+    if (!auth) {
+      next({ name: "auth" });
     } else {
       next();
     }
-  } else {
-    next();
+  } else if (to.matched.some((record) => record.meta.requiresGuest)) {
+    if (auth) {
+      next({ name: "home" });
+    } else {
+      next();
+    }
   }
 });
 
