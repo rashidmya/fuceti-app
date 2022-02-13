@@ -1,17 +1,17 @@
 import express from 'express';
-import * as users from '../controllers/auth.controller'
+import * as auth from '../controllers/auth.controller'
 import { authenticate } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.post('/login', users.login)
+router.post('/login', auth.login)
 
-router.post('/register', users.register)
+router.post('/register', auth.register)
 
-router.get('/refresh_token', users.refresh)
+router.get('/refresh_token', auth.refresh)
 
-router.get('/verify', authenticate, users.verify)
+router.get('/verify', authenticate, auth.verify)
 
-router.get('logout', users.logout)
+router.get('logout', auth.logout)
 
 export default router;

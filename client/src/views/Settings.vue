@@ -98,7 +98,7 @@ export default defineComponent({
     const router = useRouter();
 
     function logout() {
-      store.dispatch("logout");
+      store.dispatch("auth/logout");
       router.replace('/auth')
     }
 

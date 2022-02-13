@@ -19,7 +19,9 @@ const poolConfig: PoolConfig = {
 };
 
 const pool = new Pool(poolConfig);
+
 pool.once('connect', ()=> console.log('DB connected.'))
-pool.on('error', (err) => console.log(err))
+
+pool.on('error', (err) => console.log('DB connection error', err))
 
 export default pool;

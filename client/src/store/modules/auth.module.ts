@@ -85,6 +85,9 @@ const authModule: Module<AuthState, RootState> = {
     isLoggedIn(state) {
       return !!state.userId;
     },
+    userId(state) {
+      return state.userId;
+    },
   },
 };
 

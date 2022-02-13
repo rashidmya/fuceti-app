@@ -64,7 +64,8 @@ export default defineComponent({
       const user = {
         email: email.value,
         username: username.value,
-        password: password.value
+        password: password.value,
+        userType: 'consumer'
       }
       emit('register', user)
     }

@@ -12,11 +12,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onUnmounted } from "vue";
 import BottomNav from "./components/layouts/BottomNav.vue";
 import { useQuasar } from "quasar";
 import { useStore } from "./store/store";
 import { computed } from "vue";
+import socket from "./utils/socket";
 
 export default defineComponent({
   name: "App",
@@ -28,8 +29,23 @@ export default defineComponent({
     store.dispatch("auth/verify");
     store.dispatch("auth/autoLogin");
 
+    const isLoggedIn = computed(() => store.getters["auth/isLoggedIn"]);
+    const userId = computed(() => store.getters["auth/userId"]);
+
+    socket.auth = { userId: userId.value };
+    socket.connect();
+
+    socket.on("connect_error", (err) => {
+      if (err.message === "not logged in") {
+        console.log("not logged in");
+      }
+    });
+
+    onUnmounted(() => {
+      socket.off("connect_error");
+    });
+
     $q.dark.set(true);
-    const isLoggedIn = computed(() => store.getters['auth/isLoggedIn']);
     const style = computed(() => ({
       height: $q.screen.height + "px",
     }));
