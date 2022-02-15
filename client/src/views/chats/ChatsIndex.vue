@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="users-list" v-if="!userSelected">
+    <div class="users-list" v-if="!openChat">
       <the-header>
         <template #default> Chats </template>
         <template #action>
@@ -16,7 +16,7 @@
           <div v-for="user in users" :key="user.userId" class="">
             <router-link
               :to="{ name: 'chat', params: { id: user.userId } }"
-              @click="userSelected = true"
+              @click="onSelectUser(user)"
             >
               <q-item clickable v-ripple dense>
                 <q-item-section avatar>
@@ -73,7 +73,7 @@
     </q-page-sticky>
     </div>
     <div class="chat-window" v-else>
-      <router-view @unselect="userSelected = false"></router-view>
+      <router-view @unselect="unselectUser" @input="onMessage" :user="selectedUser"></router-view>
     </div>
   </div>
 </template>
@@ -85,7 +85,6 @@ import AddDialog from "../../components/ui/AddDialog.vue";
 import { defineComponent, ref, onUnmounted, computed } from "vue";
 import { useStore } from "../../store/store";
 import socket from "../../utils/socket";
-
 import { UsersEvent } from "../../interfaces/user.interface";
 
 export default defineComponent({
@@ -95,11 +94,31 @@ export default defineComponent({
     AddDialog,
   },
   setup() {
-    const userSelected = ref(false);
+    const openChat = ref(false);
+    const selectedUser = computed(()=> store.getters['user/selectedUser'])
     const addUserDialog = ref(false);
     const findUserDialog = ref(false);
     const store = useStore();
     const users = computed(() => store.getters["user/getUsers"]);
+
+    function onMessage(msg: any){
+      socket.emit('private message', {
+        msg,
+        to: selectedUser.value.userId
+      })
+      msg.sent = true
+      store.dispatch('user/sendMessage', msg)
+    }
+
+    function onSelectUser(user: any){
+      openChat.value = true
+      store.dispatch('user/selectUser', user)
+    }
+
+    function unselectUser(){
+      openChat.value = false
+      store.dispatch('user/selectUser', null)
+    }
 
     socket.on("connect", () => {
       store.dispatch("user/connect");
@@ -121,6 +140,10 @@ export default defineComponent({
       store.dispatch("user/userDisconnected", id);
     });
 
+    socket.on('private message', ({msg, from}) => {
+      store.dispatch('user/getMessage', {msg, from})
+    })
+
     onUnmounted(() => {
       socket.off("connect");
       socket.off("disconnect");
@@ -133,7 +156,11 @@ export default defineComponent({
       addUserDialog,
       findUserDialog,
       users,
-      userSelected,
+      openChat,
+      onSelectUser,
+      selectedUser,
+      unselectUser,
+      onMessage
     };
   },
 });

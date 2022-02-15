@@ -35,13 +35,13 @@
 import { defineComponent, ref, onMounted } from "vue";
 
 export default defineComponent({
-  emits: ["newMessage"],
+  emits: ["sendMessage"],
   setup(_, { emit }) {
     const newMessage = ref("");
 
     function sendMessage() {
       if (newMessage.value === "") return;
-      emit("newMessage", newMessage);
+      emit("sendMessage", newMessage);
       newMessage.value = "";
     }
 

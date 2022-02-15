@@ -11,6 +11,7 @@ export interface UsersReactive {
   
   export interface UserState {
     users: Array<UsersEvent>;
+    selectedUser: UsersReactive | null
   }
   
   

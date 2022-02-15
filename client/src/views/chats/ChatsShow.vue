@@ -3,24 +3,23 @@
     <ChatHeader :userOnline="userOnline" @unselect="$emit('unselect')" />
     <div id="chat-container" ref="chatContainer">
       <q-chat-message
-        v-for="m in messages"
+        v-for="m in user.messages"
         :key="m"
         :text="m.text"
         :stamp="moment(parseInt(m.stamp)).fromNow()"
         :sent="m.sent"
       />
     </div>
-    <ChatFooter @newMessage="sendMessage" />
+    <ChatFooter @sendMessage="sendMessage" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import {useRoute} from 'vue-router'
+import { defineComponent, ref, computed } from "vue";
 import moment from "moment";
 import ChatHeader from "../../components/chats/ChatHeader.vue";
 import ChatFooter from "../../components/chats/ChatFooter.vue";
-import socket from '../../utils/socket'
+import {useStore} from '../../store/store'
 
 interface Message {
   text: string[];
@@ -33,32 +32,26 @@ export default defineComponent({
     ChatHeader,
     ChatFooter,
   },
-  setup() {
-    const route = useRoute();
+  props: ['user'],
+  emits: ['input','unselect'],
+  setup(_, {emit}) {
+    const store = useStore();
     const userOnline = ref(false);
-    const messages = ref(new Array());
     const chatContainer = ref<HTMLDivElement>();
-    const secondUser = route.params.id
 
     function sendMessage(newMessage: any) {
       const msg: Message = {
         text: [newMessage.value],
         stamp: `${Date.now()}`,
       };
-      socket.emit('private message', {
-        msg,
-        to: secondUser
-      })
-      msg.sent = true
-      messages.value.push(msg);
+      emit('input', msg)
+      
       if (chatContainer.value) {
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
       }
     }
 
-    socket.on('private message', ({msg, from}) => {
-      messages.value.push(msg)
-    })
+    const messages = computed(()=> store.getters.messages)
 
     return {
       userOnline,

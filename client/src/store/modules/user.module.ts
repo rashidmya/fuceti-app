@@ -14,6 +14,7 @@ const chatModule: Module<UserState, RootState> = {
   state() {
     return {
       users: [],
+      selectedUser: null
     };
   },
   mutations: {
@@ -58,6 +59,25 @@ const chatModule: Module<UserState, RootState> = {
         }
       }
     },
+    getMessage(state, {msg , from}){
+      for (let i = 0; i < state.users.length; i++){
+        const user = state.users[i];
+        if (user.userId === from) {
+          user.messages.push(msg)
+          if (user !== state.selectedUser) {
+            user.hasNewMessages = true;
+            console.log(user);
+          }
+        }
+      }
+    },
+    selectUser(state, payload){
+      state.selectedUser = payload
+      if (payload !== null) state.selectedUser!.hasNewMessages = false
+    },
+    sendMessage(state, payload){
+      state.selectedUser!.messages.push(payload)
+    }
   },
   actions: {
     connect({ commit }) {
@@ -75,11 +95,23 @@ const chatModule: Module<UserState, RootState> = {
     userDisconnected({ commit }, payload) {
       commit("userDisconnected", payload);
     },
+    getMessage({commit}, payload){
+      commit('getMessage', payload)
+    },
+    selectUser({commit}, payload){
+      commit('selectUser', payload)
+    },
+    sendMessage({commit}, payload){
+      commit('sendMessage', payload)
+    }
   },
   getters: {
     getUsers(state) {
       return state.users;
     },
+    selectedUser(state){
+      return state.selectedUser;
+    }
   },
 };
 

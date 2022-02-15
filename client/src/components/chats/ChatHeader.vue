@@ -39,6 +39,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   props: ["userOnline"],
+  emits: ['unselect']
 });
 </script>
 

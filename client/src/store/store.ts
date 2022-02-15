@@ -5,7 +5,6 @@ import user from "./modules/user.module"
 import { UsersEvent } from "@/interfaces/user.interface";
 
 export interface RootState {
-  users: Array<UsersEvent>
 }
 
 export const key: InjectionKey<Store<RootState>> = Symbol();
@@ -17,7 +16,6 @@ export const store = createStore<RootState>({
   },
   state() {
     return {
-      users: []
     };
   },
   mutations: {

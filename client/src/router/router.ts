@@ -8,6 +8,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      name: "home",
       path: "/",
       component: ChatsIndex,
       meta: { requiresAuth: true },
