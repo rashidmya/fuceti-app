@@ -1,5 +1,7 @@
 import { Socket } from "socket.io";
 
 export interface UserSocket extends Socket {
-    username?: string
+    username?: string;
+    userId?: string;
+    sessionId?: string;
 }

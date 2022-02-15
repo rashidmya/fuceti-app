@@ -30,12 +30,24 @@ export default defineComponent({
     store.dispatch("auth/autoLogin");
 
     const isLoggedIn = computed(() => store.getters["auth/isLoggedIn"]);
-    const userId = computed(() => store.getters["auth/userId"]);
+    const user = computed(() => store.getters["auth/user"]);
 
-    socket.auth = { username: userId.value };
+    socket.auth = { username: user.value.username };
     socket.connect();
 
-    socket.on("connect_error", (err) => {
+    const sessionId = localStorage.getItem("sessionId");
+    
+    if (sessionId) {
+      socket.auth = { sessionId };
+    }
+
+    socket.on("session", ({ sessionId }) => {
+      socket.auth = { sessionId };
+      localStorage.setItem("sessionId", sessionId);
+      socket.userId = user.value.userId;
+    });
+
+    socket.on("connect_error", (err: Error) => {
       if (err.message === "not logged in") {
         console.log("not logged in");
       }

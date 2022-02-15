@@ -3,7 +3,10 @@ import { RootState } from "../store";
 import API from "../../api/index.api";
 
 export interface AuthState {
-  userId: string | null;
+  user: {
+    userId: string | null;
+    username: string | null;
+  };
 }
 
 enum AuthMode {
@@ -15,13 +18,17 @@ const authModule: Module<AuthState, RootState> = {
   namespaced: true,
   state() {
     return {
-      userId: null,
+      user: {
+        userId: null,
+        username: null,
+      },
     };
   },
   mutations: {
     setUser(state, payload) {
-      state.userId = payload.userId;
-    },
+      state.user.userId = payload.userId;
+      state.user.username = payload.username;
+    }
   },
   actions: {
     login({ dispatch }, payload) {
@@ -42,16 +49,18 @@ const authModule: Module<AuthState, RootState> = {
 
       localStorage.setItem("jwt", res.data.token);
       localStorage.setItem("userId", res.data.id);
+      localStorage.setItem("username", res.data.username);
 
       commit("setUser", res.data);
     },
-    async verify({ dispatch }) {
+    async verify({ dispatch, commit }) {
       const token = localStorage.getItem("jwt");
       const config = {
         headers: {
           Authorization: "Bearer " + token,
         },
       };
+
       const resVerify = await API.get("/verify", config);
       if (resVerify.data.error.message === "jwt expired") {
         localStorage.removeItem("jwt");
@@ -67,27 +76,30 @@ const authModule: Module<AuthState, RootState> = {
     },
     autoLogin({ commit }) {
       const userId = localStorage.getItem("userId");
+      const username = localStorage.getItem('username');
 
       if (userId) {
-        commit("setUser", { userId });
+        commit("setUser", { userId, username });
       }
     },
     logout({ commit }) {
       const jwt = localStorage.getItem("jwt");
       const userId = localStorage.getItem("userId");
+      const username = localStorage.getItem("username");
 
       if (jwt) localStorage.removeItem("jwt");
       if (userId) localStorage.removeItem("userId");
-      commit("setUser", { userId: null });
+      if (username) localStorage.removeItem("username");
+      commit("setUser", { userId: null, username: null });
     },
   },
   getters: {
     isLoggedIn(state) {
-      return !!state.userId;
+      return !!state.user.userId;
     },
-    userId(state) {
-      return state.userId;
-    },
+    user(state) {
+      return state.user;
+    }
   },
 };
 

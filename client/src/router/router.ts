@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ChatsIndex from "../views/chats/ChatsIndex.vue";
 import ChatsShow from "../views/chats/ChatsShow.vue";
+import Settings from '@/views/Settings.vue'
 import Auth from "../views/Auth.vue";
 import { store } from "../store/store";
 
@@ -19,6 +20,12 @@ const router = createRouter({
           component: ChatsShow,
         },
       ],
+    },
+    {
+      name: "settings",
+      path: "/settings",
+      component: Settings,
+      meta: { requiresAuth: true },
     },
     {
       name: "auth",

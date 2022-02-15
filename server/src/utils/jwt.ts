@@ -6,7 +6,7 @@ export const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "refreshxd
 
 function jwtTokens({ id, username, email }: User) {
   const user = { id, username, email };
-  const accessToken = jwt.sign(user, accessTokenSecret, { expiresIn: "1h" });
+  const accessToken = jwt.sign(user, accessTokenSecret, { expiresIn: "30d" });
   const refreshToken = jwt.sign(user, refreshTokenSecret, { expiresIn: "30d" });
   return { accessToken, refreshToken };
 }

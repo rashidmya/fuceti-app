@@ -3,7 +3,6 @@ import { RootState } from "../store";
 import { UserState, UserReactive, User } from "@/interfaces/user.interface";
 import { Message } from "@/interfaces/message.interface";
 
-
 const initReactiveProperties = (user: UserReactive) => {
   user.connected = true;
   user.messages = [];
@@ -15,13 +14,21 @@ const chatModule: Module<UserState, RootState> = {
   state() {
     return {
       users: [],
-      selectedUser: null
+      selectedUser: null,
     };
   },
   mutations: {
-    userConnected(state, payload: User) {
-      initReactiveProperties(payload as UserReactive);
-      state.users.push(payload);
+    userConnected(state, payload) {
+      const user = payload
+      for (let i = 0; i < state.users.length; i++) {
+        const existingUser = state.users[i] as UserReactive;
+        if (existingUser.userId === user.userId) {
+          existingUser.connected = true;
+          return;
+        }
+      }
+      initReactiveProperties(user);
+      state.users.push(user);
     },
     connect(state) {
       state.users.forEach((user: any) => {
@@ -38,13 +45,22 @@ const chatModule: Module<UserState, RootState> = {
       });
     },
     users(state, payload) {
-      const users: Array<User> = payload.users;
-      users.forEach((user: User) => {
-        user.self = user.userId === payload.socket.id;
-        initReactiveProperties(user as UserReactive);
+      console.log(payload);
+      const users: Array<UserReactive> = payload.users;
+      users.forEach((user) => {
+        for (let i = 0; i < state.users.length; i++) {
+          const existingUser = state.users[i] as UserReactive;
+          if (existingUser.userId === user.userId) {
+            existingUser.connected = true;
+            return;
+          }
+          user.self = user.userId === payload.socket.userId;
+          initReactiveProperties(user);
+          state.users.push(user);
+        }
       });
 
-      state.users = users.sort((a: User, b: User) => {
+      state.users.sort((a: User, b: User) => {
         if (a.self) return -1;
         if (b.self) return 1;
         if (a.username < b.username) return -1;
@@ -60,24 +76,25 @@ const chatModule: Module<UserState, RootState> = {
         }
       }
     },
-    getMessage(state, {msg , from}){
-      for (let i = 0; i < state.users.length; i++){
+    getMessage(state, { msg, from, to, fromSelf }) {
+      for (let i = 0; i < state.users.length; i++) {
         const user = state.users[i] as UserReactive;
-        if (user.userId === from) {
-          user.messages.push(msg)
+        if (user.userId === (fromSelf ? to : from)) {
+          msg.sent = fromSelf;
+          user.messages.push(msg);
           if (user !== state.selectedUser) {
             user.hasNewMessages = true;
           }
         }
       }
     },
-    selectUser(state, payload: UserReactive){
-      state.selectedUser = payload
-      if (payload !== null) state.selectedUser!.hasNewMessages = false
+    selectUser(state, payload: UserReactive) {
+      state.selectedUser = payload;
+      if (payload !== null) state.selectedUser!.hasNewMessages = false;
     },
-    sendMessage(state, payload: Message){
-      state.selectedUser!.messages.push(payload)
-    }
+    sendMessage(state, payload: Message) {
+      state.selectedUser!.messages.push(payload);
+    },
   },
   actions: {
     connect({ commit }) {
@@ -95,23 +112,23 @@ const chatModule: Module<UserState, RootState> = {
     userDisconnected({ commit }, payload) {
       commit("userDisconnected", payload);
     },
-    getMessage({commit}, payload){
-      commit('getMessage', payload)
+    getMessage({ commit }, payload) {
+      commit("getMessage", payload);
     },
-    selectUser({commit}, payload){
-      commit('selectUser', payload)
+    selectUser({ commit }, payload) {
+      commit("selectUser", payload);
     },
-    sendMessage({commit}, payload){
-      commit('sendMessage', payload)
-    }
+    sendMessage({ commit }, payload) {
+      commit("sendMessage", payload);
+    },
   },
   getters: {
     getUsers(state) {
       return state.users;
     },
-    selectedUser(state){
+    selectedUser(state) {
       return state.selectedUser;
-    }
+    },
   },
 };
 

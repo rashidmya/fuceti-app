@@ -6,8 +6,8 @@
           <img src="https://cdn.quasar.dev/img/avatar.png" />
         </q-avatar>
         <div class="user">
-          <div class="nickname">Buga</div>
-          <div class="username">bugavicious</div>
+          <div class="nickname">{{user.username}}</div>
+          <div class="username">{{user.userId}}</div>
         </div>
       </div>
     </div>
@@ -87,8 +87,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from '../store/store';
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store/store";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -97,13 +97,16 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
 
+    const user = computed(() => store.getters["auth/user"]);
+
     function logout() {
       store.dispatch("auth/logout");
-      router.replace('/auth')
+      router.replace("/auth");
     }
 
     return {
       logout,
+      user
     };
   },
 });

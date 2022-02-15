@@ -10,6 +10,11 @@ import cookieParser from "cookie-parser";
 import auth from "./routes/auth.route";
 import users from "./routes/users.route";
 import { UserSocket } from "./interfaces/socket.interface";
+import { InMemorySessionStore } from "./utils/db";
+import { randomBytes } from "crypto";
+
+const sessionStore = new InMemorySessionStore();
+const randomId = () => randomBytes(8).toString("hex");
 
 const port = process.env.PORT || 3000;
 const clientURL = process.env.CLIENT_URL || "http://localhost:8080";
@@ -41,41 +46,78 @@ app.get("/", (req, res) => {
 });
 
 io.use((socket: UserSocket, next) => {
+  const sessionId = socket.handshake.auth.sessionId;
+  if (sessionId) {
+    const session = sessionStore.findSession(sessionId);
+    if (session) {
+      socket.sessionId = sessionId;
+      socket.userId = session.userId;
+      socket.username = session.username;
+      return next();
+    }
+  }
+  const userId = socket.handshake.auth.userId;
   const username = socket.handshake.auth.username;
-  if (!username) {
+  if (!userId || !username) {
     return next(new Error("not logged in"));
   }
+  socket.userId = userId;
   socket.username = username;
+  socket.sessionId = randomId();
   next();
 });
 
-io.on("connection", (socket) => {
+io.on("connection", (socket: UserSocket) => {
+  sessionStore.saveSession(socket.sessionId, {
+    userId: socket.userId,
+    username: socket.username,
+    connected: true,
+  });
+
+  socket.emit("session", {
+    sessionId: socket.sessionId,
+  });
+
+  socket.join(socket.userId!);
+
   // fetch existing users
-  const users = [];
-  for (let [id, socket] of io.of("/").sockets) {
+  const users: Array<any> = [];
+  sessionStore.findAllSessions().forEach((session: UserSocket) => {
     users.push({
-      userId: id,
-      username: (<UserSocket>socket).username
-    });
-  }
+      userId: session.userId,
+      username: session.username,
+      connected: session.connected
+    })
+  })
   socket.emit("users", users);
 
   //notify existing useeres
-  socket.broadcast.emit('user connected', {
-    userId: (<UserSocket>socket).id,
-    username: (<UserSocket>socket).username
-  })
+  socket.broadcast.emit("user connected", {
+    userId: socket.userId,
+    username: socket.username,
+    connected: true
+  });
 
-  socket.on('private message', ({msg, to}) => {
-    socket.to(to).emit('private message', {
+  socket.on("private message", ({ msg, to }) => {
+    socket.to(to).to(socket.userId!).emit("private message", {
       msg,
-      from: socket.id
-    })
-  })
-  
-socket.on('disconnect', ()=> {
-  socket.broadcast.emit('user disconnected', socket.id)
-})
+      from: socket.userId,
+      to
+    });
+  });
+
+  socket.on("disconnect", async  () => {
+    const matchingSockeets = await io.in(socket.userId!).allSockets();
+    const isDisconnected = matchingSockeets.size === 0;
+    if (isDisconnected) {
+      socket.broadcast.emit("user disconnected", socket.userId);
+      sessionStore.saveSession(socket.sessionId, {
+        userId: socket.userId,
+        username: socket.username,
+        connected: false
+      })
+    }
+  });
 });
 
 server.listen(port, () => console.log(`listening on ${port}`));

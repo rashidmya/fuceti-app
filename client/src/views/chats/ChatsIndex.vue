@@ -141,8 +141,9 @@ export default defineComponent({
       store.dispatch("user/userDisconnected", id);
     });
 
-    socket.on('private message', ({msg, from}) => {
-      store.dispatch('user/getMessage', {msg, from})
+    socket.on('private message', ({msg, from, to}) => {
+      const fromSelf = socket.userId === from;
+      store.dispatch('user/getMessage', {msg, from, to, fromSelf})
     })
 
     onUnmounted(() => {
