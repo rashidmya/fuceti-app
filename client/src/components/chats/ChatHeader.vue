@@ -13,14 +13,14 @@
           <img src="https://cdn.quasar.dev/img/avatar.png" />
         </q-avatar>
         <div class="user-info">
-          <div class="name">Will Smith</div>
+          <div class="name">{{user.username}}</div>
           <div class="status">
             <q-icon
               name="fas fa-circle"
               class="status-icon"
-              :class="{ online: userOnline }"
+              :class="{ online: user.connected }"
             />
-            Offline
+            {{ user.connected ? 'Online' : 'Offline'}}
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  props: ["userOnline"],
+  props: ["user"],
   emits: ['unselect']
 });
 </script>

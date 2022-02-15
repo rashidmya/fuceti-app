@@ -32,7 +32,7 @@
                 </q-item-section>
 
                 <q-item-section>
-                  <q-item-label lines="1">{{ user.userId }}</q-item-label>
+                  <q-item-label lines="1">{{ user.username }}</q-item-label>
                   <q-item-label caption lines="1">
                     I'll be in your neighborhood doing errands this weekend. Do
                     you want to grab brunch?

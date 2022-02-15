@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md row justify-center">
-    <ChatHeader :userOnline="userOnline" @unselect="$emit('unselect')" />
+    <ChatHeader :user="user" @unselect="$emit('unselect')" />
     <div id="chat-container" ref="chatContainer">
       <q-chat-message
         v-for="m in user.messages"
@@ -36,7 +36,6 @@ export default defineComponent({
   emits: ['input','unselect'],
   setup(_, {emit}) {
     const store = useStore();
-    const userOnline = ref(false);
     const chatContainer = ref<HTMLDivElement>();
 
     function sendMessage(newMessage: any) {
@@ -54,7 +53,6 @@ export default defineComponent({
     const messages = computed(()=> store.getters.messages)
 
     return {
-      userOnline,
       sendMessage,
       messages,
       moment,
