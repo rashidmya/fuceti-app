@@ -1,9 +1,10 @@
 import { Module } from "vuex";
 import { RootState } from "../store";
+import { UserState, UserReactive, User } from "@/interfaces/user.interface";
+import { Message } from "@/interfaces/message.interface";
 
-import { UserState, UsersReactive } from "@/interfaces/user.interface";
 
-const initReactiveProperties = (user: UsersReactive) => {
+const initReactiveProperties = (user: UserReactive) => {
   user.connected = true;
   user.messages = [];
   user.hasNewMessages = false;
@@ -18,8 +19,8 @@ const chatModule: Module<UserState, RootState> = {
     };
   },
   mutations: {
-    userConnected(state, payload) {
-      initReactiveProperties(payload);
+    userConnected(state, payload: User) {
+      initReactiveProperties(payload as UserReactive);
       state.users.push(payload);
     },
     connect(state) {
@@ -37,22 +38,22 @@ const chatModule: Module<UserState, RootState> = {
       });
     },
     users(state, payload) {
-      const allUsers = payload.allUsers;
-      allUsers.forEach((user: any) => {
+      const users: Array<User> = payload.users;
+      users.forEach((user: User) => {
         user.self = user.userId === payload.socket.id;
-        initReactiveProperties(user);
+        initReactiveProperties(user as UserReactive);
       });
 
-      state.users = allUsers.sort((a: any, b: any) => {
+      state.users = users.sort((a: User, b: User) => {
         if (a.self) return -1;
         if (b.self) return 1;
         if (a.username < b.username) return -1;
         return a.username > b.username ? 1 : 0;
       });
     },
-    userDisconnected(state, payload) {
+    userDisconnected(state, payload: string) {
       for (let i = 0; i < state.users.length; i++) {
-        const user = state.users[i];
+        const user = state.users[i] as UserReactive;
         if (user.userId === payload) {
           user.connected = false;
           break;
@@ -61,21 +62,20 @@ const chatModule: Module<UserState, RootState> = {
     },
     getMessage(state, {msg , from}){
       for (let i = 0; i < state.users.length; i++){
-        const user = state.users[i];
+        const user = state.users[i] as UserReactive;
         if (user.userId === from) {
           user.messages.push(msg)
           if (user !== state.selectedUser) {
             user.hasNewMessages = true;
-            console.log(user);
           }
         }
       }
     },
-    selectUser(state, payload){
+    selectUser(state, payload: UserReactive){
       state.selectedUser = payload
       if (payload !== null) state.selectedUser!.hasNewMessages = false
     },
-    sendMessage(state, payload){
+    sendMessage(state, payload: Message){
       state.selectedUser!.messages.push(payload)
     }
   },

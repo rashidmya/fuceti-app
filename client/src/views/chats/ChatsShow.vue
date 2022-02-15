@@ -19,38 +19,33 @@ import { defineComponent, ref, computed } from "vue";
 import moment from "moment";
 import ChatHeader from "../../components/chats/ChatHeader.vue";
 import ChatFooter from "../../components/chats/ChatFooter.vue";
-import {useStore} from '../../store/store'
-
-interface Message {
-  text: string[];
-  stamp: string;
-  sent?: Boolean;
-}
+import { useStore } from "../../store/store";
+import { Message } from "@/interfaces/message.interface";
 
 export default defineComponent({
   components: {
     ChatHeader,
     ChatFooter,
   },
-  props: ['user'],
-  emits: ['input','unselect'],
-  setup(_, {emit}) {
+  props: ["user"],
+  emits: ["input", "unselect"],
+  setup(_, { emit }) {
     const store = useStore();
     const chatContainer = ref<HTMLDivElement>();
 
-    function sendMessage(newMessage: any) {
+    function sendMessage(newMessage: string) {
       const msg: Message = {
-        text: [newMessage.value],
+        text: [newMessage],
         stamp: `${Date.now()}`,
       };
-      emit('input', msg)
-      
+      emit("input", msg);
+
       if (chatContainer.value) {
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
       }
     }
 
-    const messages = computed(()=> store.getters.messages)
+    const messages = computed(() => store.getters.messages);
 
     return {
       sendMessage,

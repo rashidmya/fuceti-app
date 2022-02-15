@@ -2,7 +2,6 @@ import { InjectionKey } from "vue";
 import { createStore, useStore as baseUseStore, Store } from "vuex";
 import auth from "./modules/auth.module";
 import user from "./modules/user.module"
-import { UsersEvent } from "@/interfaces/user.interface";
 
 export interface RootState {
 }

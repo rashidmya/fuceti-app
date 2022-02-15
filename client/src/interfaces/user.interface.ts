@@ -1,17 +1,19 @@
-export interface UsersReactive {
+  import { Message } from "./message.interface";
+  export interface User {
+    self: boolean;
+    userId: string;
+    username: string;
+  }
+
+  export interface UserReactive extends User {
     connected: boolean;
-    messages: Array<string>;
+    messages: Array<Message>;
     hasNewMessages: boolean;
   }
   
-  export interface UsersEvent extends UsersReactive {
-    self: boolean;
-    userId: string;
-  }
   
   export interface UserState {
-    users: Array<UsersEvent>;
-    selectedUser: UsersReactive | null
+    users: Array<User>;
+    selectedUser: UserReactive | null
   }
-  
   

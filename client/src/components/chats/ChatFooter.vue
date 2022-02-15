@@ -41,7 +41,7 @@ export default defineComponent({
 
     function sendMessage() {
       if (newMessage.value === "") return;
-      emit("sendMessage", newMessage);
+      emit("sendMessage", newMessage.value);
       newMessage.value = "";
     }
 
