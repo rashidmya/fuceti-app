@@ -10,10 +10,13 @@ import cookieParser from "cookie-parser";
 import auth from "./routes/auth.route";
 import users from "./routes/users.route";
 import { UserSocket } from "./interfaces/socket.interface";
-import { InMemorySessionStore } from "./utils/db";
+import { InMemorySessionStore } from "./utils/session";
+import { InMemoryMessageStore } from "./utils/message";
 import { randomBytes } from "crypto";
 
 const sessionStore = new InMemorySessionStore();
+const messageStore = new InMemoryMessageStore();
+
 const randomId = () => randomBytes(8).toString("hex");
 
 const port = process.env.PORT || 3000;
@@ -98,9 +101,9 @@ io.on("connection", (socket: UserSocket) => {
     connected: true
   });
 
-  socket.on("private message", ({ msg, to }) => {
+  socket.on("private message", ({ content, to }) => {
     socket.to(to).to(socket.userId!).emit("private message", {
-      msg,
+      content,
       from: socket.userId,
       to
     });

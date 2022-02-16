@@ -34,11 +34,11 @@ export default defineComponent({
     const chatContainer = ref<HTMLDivElement>();
 
     function sendMessage(newMessage: string) {
-      const msg: Message = {
+      const content: Message = {
         text: [newMessage],
         stamp: `${Date.now()}`,
       };
-      emit("input", msg);
+      emit("input", content);
 
       if (chatContainer.value) {
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight;

@@ -102,13 +102,13 @@ export default defineComponent({
     const store = useStore();
     const users = computed(() => store.getters["user/getUsers"]);
 
-    function onMessage(msg: Message){
+    function onMessage(content: Message){
       socket.emit('private message', {
-        msg,
+        content,
         to: selectedUser.value.userId
       })
-      msg.sent = true
-      store.dispatch('user/sendMessage', msg)
+      content.sent = true
+      store.dispatch('user/sendMessage', content)
     }
 
     function onSelectUser(user: UserReactive){
@@ -141,8 +141,8 @@ export default defineComponent({
       store.dispatch("user/userDisconnected", id);
     });
 
-    socket.on('private message', ({msg, from, to}) => {
-      store.dispatch('user/getMessage', {msg, from, to})
+    socket.on('private message', ({content, from, to}) => {
+      store.dispatch('user/getMessage', {content, from, to})
     })
 
     onUnmounted(() => {

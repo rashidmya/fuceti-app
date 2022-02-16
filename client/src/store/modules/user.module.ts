@@ -75,13 +75,13 @@ const chatModule: Module<UserState, RootState> = {
         }
       }
     },
-    getMessage(state, { msg, from, to }) {
+    getMessage(state, { content, from, to }) {
       const fromSelf = socket.userId === from;
       for (let i = 0; i < state.users.length; i++) {
         const user = state.users[i] as UserReactive;
         if (user.userId === (fromSelf ? to : from)) {
-          msg.sent = fromSelf;
-          user.messages.push(msg);
+          content.sent = fromSelf;
+          user.messages.push(content);
           if (user !== state.selectedUser) {
             user.hasNewMessages = true;
           }
