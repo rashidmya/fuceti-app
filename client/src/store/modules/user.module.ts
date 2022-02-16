@@ -19,7 +19,7 @@ const chatModule: Module<UserState, RootState> = {
   },
   mutations: {
     userConnected(state, payload) {
-      const user = payload
+      const user = payload;
       for (let i = 0; i < state.users.length; i++) {
         const existingUser = state.users[i] as UserReactive;
         if (existingUser.userId === user.userId) {
@@ -44,23 +44,21 @@ const chatModule: Module<UserState, RootState> = {
         }
       });
     },
-    users(state, payload) {
-      console.log(payload);
-      const users: Array<UserReactive> = payload.users;
-      users.forEach((user) => {
+    users(state, {users, socket}) {
+      (<Array<UserReactive>>users).forEach((user) => {
         for (let i = 0; i < state.users.length; i++) {
           const existingUser = state.users[i] as UserReactive;
           if (existingUser.userId === user.userId) {
-            existingUser.connected = true;
+            existingUser.connected = user.connected;
             return;
           }
-          user.self = user.userId === payload.socket.userId;
-          initReactiveProperties(user);
-          state.users.push(user);
         }
+        user.self = user.userId === socket.userID;
+        initReactiveProperties(user);
+        state.users.push(user);
       });
-
-      state.users.sort((a: User, b: User) => {
+      // put the current user first, and sort by username
+      state.users.sort((a, b) => {
         if (a.self) return -1;
         if (b.self) return 1;
         if (a.username < b.username) return -1;
