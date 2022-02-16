@@ -1,4 +1,5 @@
 import { Message } from "./message.interface";
+
 export interface User {
   self: boolean;
   userId: string;
