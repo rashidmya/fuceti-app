@@ -32,7 +32,8 @@ export default defineComponent({
     const isLoggedIn = computed(() => store.getters["auth/isLoggedIn"]);
     const user = computed(() => store.getters["auth/user"]);
 
-    socket.auth = { username: user.value.username };
+    socket.userId = user.value.userId;
+    socket.auth = { username: user.value.username, userId: user.value.userId };
     socket.connect();
 
     const sessionId = localStorage.getItem("sessionId");
@@ -44,7 +45,6 @@ export default defineComponent({
     socket.on("session", ({ sessionId }) => {
       socket.auth = { sessionId };
       localStorage.setItem("sessionId", sessionId);
-      socket.userId = user.value.userId;
     });
 
     socket.on("connect_error", (err: Error) => {
