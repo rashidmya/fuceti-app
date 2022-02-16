@@ -85,31 +85,46 @@ io.on("connection", (socket: UserSocket) => {
 
   // fetch existing users
   const users: Array<any> = [];
+  const messagesPerUser = new Map();
+  messageStore.findMessagesForUser(socket.userId).forEach((message) => {
+    const { from, to } = message;
+    const otherUser = socket.userId === from ? to : from;
+    if (messagesPerUser.has(otherUser)) {
+      messagesPerUser.get(otherUser).push(message);
+    } else {
+      messagesPerUser.set(otherUser, [message]);
+    }
+  });
   sessionStore.findAllSessions().forEach((session: UserSocket) => {
     users.push({
       userId: session.userId,
       username: session.username,
-      connected: session.connected
-    })
-  })
+      connected: session.connected,
+      messages: messagesPerUser.get(session.userId) || [],
+    });
+  });
   socket.emit("users", users);
 
-  //notify existing useeres
+  //notify existing users
   socket.broadcast.emit("user connected", {
     userId: socket.userId,
     username: socket.username,
-    connected: true
+    connected: true,
+    messages: [],
   });
 
+  // forward the eprivate message to thee right reecpieent (and to other tabs of seneedere)
   socket.on("private message", ({ content, to }) => {
-    socket.to(to).to(socket.userId!).emit("private message", {
+    const message = {
       content,
       from: socket.userId,
-      to
-    });
+      to,
+    };
+    socket.to(to).to(socket.userId!).emit("private message", message);
+    messageStore.saveMessage(message);
   });
 
-  socket.on("disconnect", async  () => {
+  socket.on("disconnect", async () => {
     const matchingSockeets = await io.in(socket.userId!).allSockets();
     const isDisconnected = matchingSockeets.size === 0;
     if (isDisconnected) {
@@ -117,8 +132,8 @@ io.on("connection", (socket: UserSocket) => {
       sessionStore.saveSession(socket.sessionId, {
         userId: socket.userId,
         username: socket.username,
-        connected: false
-      })
+        connected: false,
+      });
     }
   });
 });

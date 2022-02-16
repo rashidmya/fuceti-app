@@ -4,11 +4,11 @@ export interface User {
   self: boolean;
   userId: string;
   username: string;
+  connected: boolean;
+  messages: Array<Message>;
 }
 
 export interface UserReactive extends User {
-  connected: boolean;
-  messages: Array<Message>;
   hasNewMessages: boolean;
 }
 

@@ -20,7 +20,7 @@ import moment from "moment";
 import ChatHeader from "../../components/chats/ChatHeader.vue";
 import ChatFooter from "../../components/chats/ChatFooter.vue";
 import { useStore } from "../../store/store";
-import { Message } from "@/interfaces/message.interface";
+import { Message } from "../../interfaces/message.interface";
 
 export default defineComponent({
   components: {

@@ -1,12 +1,10 @@
 import { Module } from "vuex";
 import { RootState } from "../store";
 import { UserState, UserReactive, User } from "@/interfaces/user.interface";
-import { Message } from "@/interfaces/message.interface";
+import { Message } from "../../interfaces/message.interface";
 import socket from "@/utils/socket";
 
 const initReactiveProperties = (user: UserReactive) => {
-  user.connected = true;
-  user.messages = [];
   user.hasNewMessages = false;
 };
 
@@ -46,16 +44,21 @@ const chatModule: Module<UserState, RootState> = {
       });
     },
     users(state, { users }) {
-      (<Array<UserReactive>>users).forEach((user) => {
+      console.log(users);
+      (<Array<User>>users).forEach((user) => {
+        user.messages.forEach(message => {
+          message.sent = message.from === socket.userId
+        })
         for (let i = 0; i < state.users.length; i++) {
           const existingUser = state.users[i] as UserReactive;
           if (existingUser.userId === user.userId) {
             existingUser.connected = user.connected;
+            existingUser.messages = user.messages
             return;
           }
         }
         user.self = user.userId === socket.userId;
-        initReactiveProperties(user);
+        initReactiveProperties(user as UserReactive);
         state.users.push(user);
       });
       // put the current user first, and sort by username
