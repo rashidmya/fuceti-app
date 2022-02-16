@@ -130,7 +130,7 @@ export default defineComponent({
     });
 
     socket.on("users", (users: Array<User>) => {
-      store.dispatch("user/users", { users, socket });
+      store.dispatch("user/users", { users });
     });
 
     socket.on("user connected", (user: User) => {
@@ -142,8 +142,7 @@ export default defineComponent({
     });
 
     socket.on('private message', ({msg, from, to}) => {
-      const fromSelf = socket.userId === from;
-      store.dispatch('user/getMessage', {msg, from, to, fromSelf})
+      store.dispatch('user/getMessage', {msg, from, to})
     })
 
     onUnmounted(() => {

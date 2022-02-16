@@ -2,6 +2,7 @@ import { Module } from "vuex";
 import { RootState } from "../store";
 import { UserState, UserReactive, User } from "@/interfaces/user.interface";
 import { Message } from "@/interfaces/message.interface";
+import socket from "@/utils/socket";
 
 const initReactiveProperties = (user: UserReactive) => {
   user.connected = true;
@@ -44,7 +45,7 @@ const chatModule: Module<UserState, RootState> = {
         }
       });
     },
-    users(state, {users, socket}) {
+    users(state, { users }) {
       (<Array<UserReactive>>users).forEach((user) => {
         for (let i = 0; i < state.users.length; i++) {
           const existingUser = state.users[i] as UserReactive;
@@ -53,7 +54,7 @@ const chatModule: Module<UserState, RootState> = {
             return;
           }
         }
-        user.self = user.userId === socket.userID;
+        user.self = user.userId === socket.userId;
         initReactiveProperties(user);
         state.users.push(user);
       });
@@ -74,7 +75,8 @@ const chatModule: Module<UserState, RootState> = {
         }
       }
     },
-    getMessage(state, { msg, from, to, fromSelf }) {
+    getMessage(state, { msg, from, to }) {
+      const fromSelf = socket.userId === from;
       for (let i = 0; i < state.users.length; i++) {
         const user = state.users[i] as UserReactive;
         if (user.userId === (fromSelf ? to : from)) {
