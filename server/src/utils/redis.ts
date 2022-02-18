@@ -55,7 +55,7 @@ export class RedisSessionStore extends SessionStore {
 
   findSession(id: string): any {
     return this.redisClient
-      .hmget(`sessionL${id}`, "userId", "username", "connected")
+      .hmget(`session:${id}`, "userId", "username", "connected")
       .then(mapSession);
   }
 
