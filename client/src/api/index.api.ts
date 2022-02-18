@@ -4,7 +4,7 @@ class API {
   url: string;
 
   constructor() {
-    this.url = process.env.CLIENT_URL || "/api/auth";
+    this.url = process.env.SERVER_URL || "/api/auth";
   }
 
   async post(route: string, body: any) {

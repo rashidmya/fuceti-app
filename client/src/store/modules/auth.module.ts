@@ -62,6 +62,9 @@ const authModule: Module<AuthState, RootState> = {
       };
 
       const resVerify = await API.get("/verify", config);
+      if (resVerify.status === 500){
+        throw new Error(resVerify.data)
+      }
       if (resVerify.data.error.message === "jwt expired") {
         localStorage.removeItem("jwt");
         const res = await API.get("/refresh_token", {});
