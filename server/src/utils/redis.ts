@@ -34,7 +34,7 @@ export class RedisMessageStore extends MessageStore {
 
   findMessagesForUser(userId: any): any {
     return this.redisClient
-      .lrange(`messages:${userId}`, 0, 1)
+      .lrange(`messages:${userId}`, 0, -1)
       .then((results) => {
         return results.map((result) => JSON.parse(result));
       });
