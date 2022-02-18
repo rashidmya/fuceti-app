@@ -1,7 +1,7 @@
 import { Module } from "vuex";
 import { RootState } from "../store";
 import { UserState, UserReactive, User } from "@/interfaces/user.interface";
-import { Message } from "../../interfaces/message.interface";
+import { Content } from "../../interfaces/message.interface";
 import socket from "@/utils/socket";
 
 const initReactiveProperties = (user: UserReactive) => {
@@ -84,7 +84,7 @@ const chatModule: Module<UserState, RootState> = {
         const user = state.users[i] as UserReactive;
         if (user.userId === (fromSelf ? to : from)) {
           content.sent = fromSelf;
-          user.messages.push(content);
+          user.messages.push({content});
           if (user !== state.selectedUser) {
             user.hasNewMessages = true;
           }
@@ -95,8 +95,8 @@ const chatModule: Module<UserState, RootState> = {
       state.selectedUser = payload;
       if (payload !== null) state.selectedUser!.hasNewMessages = false;
     },
-    sendMessage(state, payload: Message) {
-      state.selectedUser!.messages.push(payload);
+    sendMessage(state, payload: Content) {
+      state.selectedUser!.messages.push({content: payload});
     },
   },
   actions: {

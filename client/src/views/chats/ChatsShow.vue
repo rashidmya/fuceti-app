@@ -5,8 +5,8 @@
       <q-chat-message
         v-for="m in user.messages"
         :key="m"
-        :text="m.text"
-        :stamp="moment(parseInt(m.stamp)).fromNow()"
+        :text="m.content.text"
+        :stamp="moment(parseInt(m.content.stamp)).fromNow()"
         :sent="m.sent"
       />
     </div>
@@ -15,12 +15,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref } from "vue";
 import moment from "moment";
 import ChatHeader from "../../components/chats/ChatHeader.vue";
 import ChatFooter from "../../components/chats/ChatFooter.vue";
-import { useStore } from "../../store/store";
-import { Message } from "../../interfaces/message.interface";
+import { Content } from "../../interfaces/message.interface";
 
 export default defineComponent({
   components: {
@@ -30,11 +29,10 @@ export default defineComponent({
   props: ["user"],
   emits: ["input", "unselect"],
   setup(_, { emit }) {
-    const store = useStore();
     const chatContainer = ref<HTMLDivElement>();
 
     function sendMessage(newMessage: string) {
-      const content: Message = {
+      const content: Content = {
         text: [newMessage],
         stamp: `${Date.now()}`,
       };
@@ -45,11 +43,8 @@ export default defineComponent({
       }
     }
 
-    const messages = computed(() => store.getters.messages);
-
     return {
       sendMessage,
-      messages,
       moment,
       chatContainer,
     };

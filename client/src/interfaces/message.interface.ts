@@ -1,9 +1,14 @@
 export interface Message {
-  text: string[];
-  stamp: string;
   sent?: Boolean;
   from?: UserId;
   to?: UserId;
+  content: Content
 }
+
+export interface Content {
+    text: string[];
+    stamp: string;
+}
+
 
 type UserId = string;
