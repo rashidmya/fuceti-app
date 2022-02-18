@@ -2,19 +2,24 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
+import { UserSocket } from "./interfaces/socket.interface";
 import express from "express";
 import { Server } from "socket.io";
+import bcrypt from "bcrypt";
 import http from "http";
 import cors, { CorsOptions } from "cors";
-import cookieParser from "cookie-parser";
-import auth from "./routes/auth.route";
-import users from "./routes/users.route";
-import { UserSocket } from "./interfaces/socket.interface";
-import { RedisMessageStore, RedisSessionStore } from "./utils/redis";
+import session from "express-session";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
 import { randomBytes } from "crypto";
 import Redis from "ioredis";
 import { setupWorker } from "@socket.io/sticky";
-import { createAdapter} from "@socket.io/redis-adapter";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { RedisMessageStore, RedisSessionStore } from "./utils/redis";
+import auth from "./routes/auth.route";
+import users from "./routes/users.route";
+import pool from "./config/db.config";
+import { User } from "./interfaces/users.interface";
 
 const randomId = () => randomBytes(8).toString("hex");
 const clientURL = process.env.CLIENT_URL || "http://localhost:8080";
@@ -26,14 +31,6 @@ const redisClient = new Redis();
 const sessionStore = new RedisSessionStore(redisClient);
 const messageStore = new RedisMessageStore(redisClient);
 
-const io = new Server(server, {
-  cors: {
-    origin: clientURL,
-    credentials: true,
-  },
-  adapter: createAdapter(redisClient,redisClient.duplicate())
-});
-
 const corsOptions: CorsOptions = {
   credentials: true,
   origin: clientURL,
@@ -42,13 +39,78 @@ const corsOptions: CorsOptions = {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
-app.use(cookieParser());
+
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    pool.query(
+      "SELECT * from users WHERE username = $1",
+      [username],
+      (err, res) => {
+        if (err) {
+          return done(err);
+        }
+        if (res.rows.length === 0) {
+          return done(null, false, { message: "Username is incorrect!" });
+        }
+        bcrypt.compare(password, res.rows[0].password, function (err, same) {
+          if (err) {
+            return done(err);
+          }
+          if (!same) {
+            return done(null, false, { message: "Incorrect password" });
+          }
+          return done(null, res.rows[0]);
+        });
+      }
+    );
+  })
+);
+
+passport.serializeUser(function (user: User, done) {
+  process.nextTick(function () {
+    done(null, user.id);
+  });
+});
+
+passport.deserializeUser(function (user: User, done) {
+  process.nextTick(function () {
+    pool.query(
+      "SELECT id,username FROM users WHERE id = $1",
+      [user.id],
+      (err, res) => {
+        if (err) {
+          return done(err);
+        }
+        done(null, res.rows[0]);
+      }
+    );
+  });
+});
 
 app.use("/api/auth/", auth);
 app.use("/api/users/", users);
 
 app.get("/", (req, res) => {
   res.status(200).send("Hello World!");
+});
+
+const io = new Server(server, {
+  cors: {
+    origin: clientURL,
+    credentials: true,
+  },
+  adapter: createAdapter(redisClient, redisClient.duplicate()),
 });
 
 io.use(async (socket: UserSocket, next) => {
@@ -91,7 +153,7 @@ io.on("connection", async (socket: UserSocket) => {
   const [messages, sessions] = await Promise.all([
     messageStore.findMessagesForUser(socket.userId),
     sessionStore.findAllSessions(),
-  ])
+  ]);
   const messagesPerUser: any = new Map();
   messages.forEach((message: any) => {
     const { from, to } = message;
