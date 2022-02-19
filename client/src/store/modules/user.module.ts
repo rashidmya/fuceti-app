@@ -44,7 +44,6 @@ const chatModule: Module<UserState, RootState> = {
       });
     },
     users(state, { users }) {
-      console.log(users);
       (<Array<User>>users).forEach((user) => {
         user.messages.forEach(message => {
           message.sent = message.from === socket.userId
@@ -96,7 +95,7 @@ const chatModule: Module<UserState, RootState> = {
       if (payload !== null) state.selectedUser!.hasNewMessages = false;
     },
     sendMessage(state, payload: Content) {
-      state.selectedUser!.messages.push({content: payload});
+      state.selectedUser!.messages.push({sent: true, content: payload});
     },
   },
   actions: {

@@ -18,6 +18,7 @@ import { useQuasar } from "quasar";
 import { useStore } from "./store/store";
 import { computed } from "vue";
 import socket from "./utils/socket";
+import { User } from "./interfaces/user.interface";
 
 export default defineComponent({
   name: "App",
@@ -47,6 +48,31 @@ export default defineComponent({
       localStorage.setItem("sessionId", sessionId);
     });
 
+      socket.on("connect", () => {
+      store.dispatch("user/connect");
+    });
+
+    socket.on("disconnect", () => {
+      store.dispatch("user/disconnect");
+    });
+
+    socket.on("users", (users: Array<User>) => {
+      store.dispatch("user/users", { users });
+    });
+
+    socket.on("user connected", (user: User) => {
+      store.dispatch("user/userConnected", user);
+    });
+
+    socket.on("user disconnected", (id: string) => {
+      store.dispatch("user/userDisconnected", id);
+    });
+
+    socket.on('private message', ({content, from, to}) => {
+      store.dispatch('user/getMessage', {content, from, to})
+    })
+
+
     socket.on("connect_error", (err: Error) => {
       if (err.message === "not logged in") {
         console.log("not logged in");
@@ -55,6 +81,12 @@ export default defineComponent({
 
     onUnmounted(() => {
       socket.off("connect_error");
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("users");
+      socket.off("user connected");
+      socket.off("user disconnected");
+      socket.off("private message");
     });
 
     $q.dark.set(true);

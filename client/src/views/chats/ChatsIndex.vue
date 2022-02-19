@@ -85,7 +85,7 @@ import AddDialog from "../../components/ui/AddDialog.vue";
 import { defineComponent, ref, onUnmounted, computed } from "vue";
 import { useStore } from "../../store/store";
 import socket from "../../utils/socket";
-import { User, UserReactive } from "../../interfaces/user.interface";
+import { UserReactive } from "../../interfaces/user.interface";
 import { Message } from "../../interfaces/message.interface";
 
 export default defineComponent({
@@ -107,7 +107,6 @@ export default defineComponent({
         content,
         to: selectedUser.value.userId
       })
-      content.sent = true
       store.dispatch('user/sendMessage', content)
     }
 
@@ -121,37 +120,8 @@ export default defineComponent({
       store.dispatch('user/selectUser', null)
     }
 
-    socket.on("connect", () => {
-      store.dispatch("user/connect");
-    });
-
-    socket.on("disconnect", () => {
-      store.dispatch("user/disconnect");
-    });
-
-    socket.on("users", (users: Array<User>) => {
-      store.dispatch("user/users", { users });
-    });
-
-    socket.on("user connected", (user: User) => {
-      store.dispatch("user/userConnected", user);
-    });
-
-    socket.on("user disconnected", (id: string) => {
-      store.dispatch("user/userDisconnected", id);
-    });
-
-    socket.on('private message', ({content, from, to}) => {
-      store.dispatch('user/getMessage', {content, from, to})
-    })
-
     onUnmounted(() => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("users");
-      socket.off("user connected");
-      socket.off("user disconnected");
-      socket.off("private message");
+
     });
     return {
       addUserDialog,
