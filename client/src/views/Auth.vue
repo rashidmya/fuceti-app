@@ -59,7 +59,7 @@ export default defineComponent({
     async function register(data: SignUp) {
       try {
         await store.dispatch("auth/register", data);
-        router.replace('/')
+        router.go(0);
       } catch (e) {
         console.log(e);
       }
@@ -68,7 +68,7 @@ export default defineComponent({
     async function login(data: SignIn) {
       try {
         await store.dispatch("auth/login", data);
-         router.replace('/')
+        router.go(0);
       } catch (e) {
         console.log(e);
       }
