@@ -83,11 +83,11 @@ passport.serializeUser(function (user: User, done) {
   });
 });
 
-passport.deserializeUser(function (user: User, done) {
+passport.deserializeUser(function (id: User, done) {
   process.nextTick(function () {
     pool.query(
       "SELECT id,username FROM users WHERE id = $1",
-      [user.id],
+      [id],
       (err, res) => {
         if (err) {
           return done(err);
