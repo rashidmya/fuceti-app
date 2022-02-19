@@ -82,7 +82,7 @@ const authModule: Module<AuthState, RootState> = {
       const username = localStorage.getItem('username');
 
       if (userId) {
-        commit("setUser", { userId, username });
+        commit("setUser", { id: userId, username });
       }
     },
     logout({ commit }) {
