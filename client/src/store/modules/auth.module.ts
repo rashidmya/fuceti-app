@@ -26,7 +26,7 @@ const authModule: Module<AuthState, RootState> = {
   },
   mutations: {
     setUser(state, payload) {
-      state.user.userId = payload.userId;
+      state.user.userId = payload.id;
       state.user.username = payload.username;
     }
   },
@@ -53,7 +53,7 @@ const authModule: Module<AuthState, RootState> = {
 
       commit("setUser", res.data);
     },
-    async verify({ dispatch, commit }) {
+    async verify({ dispatch }) {
       const token = localStorage.getItem("jwt");
       const config = {
         headers: {
@@ -97,7 +97,7 @@ const authModule: Module<AuthState, RootState> = {
     },
   },
   getters: {
-    isLoggedIn(state) {
+    isAuthenticated(state) {
       return !!state.user.userId;
     },
     user(state) {
