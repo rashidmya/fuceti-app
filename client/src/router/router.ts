@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ChatsIndex from "../views/chats/ChatsIndex.vue";
 import ChatsShow from "../views/chats/ChatsShow.vue";
-import Settings from '@/views/Settings.vue'
+import Settings from "@/views/Settings.vue";
 import Auth from "../views/Auth.vue";
 import { store } from "../store/store";
 
@@ -39,22 +39,17 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from, next) => {
-  const auth = store.getters["auth/isLoggedIn"];
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!auth) {
-      next({ name: "auth" });
-    } else {
-      next();
-    }
-  } else if (to.matched.some((record) => record.meta.requiresGuest)) {
-    if (auth) {
-      next({ name: "home" });
-    } else {
-      next();
-    }
+router.beforeEach((to, from, next) => {
+  const isAuth = store.getters["auth/isAuthenticated"];
+  
+  if (to.matched.some((record) => record.meta.requiresAuth) && !isAuth) {
+      return next({ name: "auth" });
   }
+  if (to.matched.some((record) => record.meta.requiresGuest) && isAuth) {
+      return next({ name: "home" });
+  }
+  next();
 });
 
 export default router;
