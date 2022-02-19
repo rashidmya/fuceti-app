@@ -6,7 +6,7 @@
           <router-view></router-view>
         </q-page>
       </q-page-container>
-      <BottomNav v-if="isLoggedIn"></BottomNav>
+      <BottomNav v-if="isAuthenticated"></BottomNav>
     </q-layout>
   </div>
 </template>
@@ -29,7 +29,7 @@ export default defineComponent({
     store.dispatch("auth/verify");
     store.dispatch("auth/autoLogin");
 
-    const isLoggedIn = computed(() => store.getters["auth/isLoggedIn"]);
+    const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
     const user = computed(() => store.getters["auth/user"]);
 
     socket.userId = user.value.userId;
@@ -63,7 +63,7 @@ export default defineComponent({
     }));
 
     return {
-      isLoggedIn,
+      isAuthenticated,
       style,
     };
   },
