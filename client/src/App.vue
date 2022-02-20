@@ -109,9 +109,9 @@ export default defineComponent({
     });
 
     socket.on('call decline', ()=> {
-      console.log('hi');
       closeCall();
     })
+    
     socket.on("connect_error", (err: Error) => {
       if (err.message === "not logged in") {
         console.log("not logged in");
