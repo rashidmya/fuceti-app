@@ -8,11 +8,26 @@
       </q-page-container>
       <BottomNav v-if="isAuthenticated"></BottomNav>
     </q-layout>
+    <q-dialog persistent v-model="IncomingCall.dialog" position="top">
+      <q-card style="width: 100%">
+        <q-card-section class="row items-center no-wrap">
+          <div>
+            <div class="text-weight-bold">{{IncomingCall.from.username}}</div>
+            <div class="text-grey">Incoming call</div>
+          </div>
+
+          <q-space />
+
+          <q-btn round icon="mdi-phone-hangup" color="red" @click="onHangup"/>
+          <q-btn round  icon="mdi-phone" color="green" class="q-ml-md" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onUnmounted } from "vue";
+import { defineComponent, onUnmounted, reactive } from "vue";
 import BottomNav from "./components/layouts/BottomNav.vue";
 import { useQuasar } from "quasar";
 import { useStore } from "./store/store";
@@ -26,11 +41,27 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const store = useStore();
+    const IncomingCall = reactive({
+      dialog: false,
+      from: null
+    })
+
+    function closeCall(){
+      IncomingCall.dialog = false;
+      IncomingCall.from = null;
+    }
+    
+    function onHangup(){
+      socket.emit('call hangup', IncomingCall.from)
+      closeCall();
+    }
 
     store.dispatch("auth/verify");
     store.dispatch("auth/autoLogin");
 
-    const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
+    const isAuthenticated = computed(
+      () => store.getters["auth/isAuthenticated"]
+    );
     const user = computed(() => store.getters["auth/user"]);
 
     socket.userId = user.value.userId;
@@ -38,7 +69,7 @@ export default defineComponent({
     socket.connect();
 
     const sessionId = localStorage.getItem("sessionId");
-    
+
     if (sessionId) {
       socket.auth = { sessionId };
     }
@@ -48,7 +79,7 @@ export default defineComponent({
       localStorage.setItem("sessionId", sessionId);
     });
 
-      socket.on("connect", () => {
+    socket.on("connect", () => {
       store.dispatch("user/connect");
     });
 
@@ -68,11 +99,19 @@ export default defineComponent({
       store.dispatch("user/userDisconnected", id);
     });
 
-    socket.on('private message', ({content, from, to}) => {
-      store.dispatch('user/getMessage', {content, from, to})
+    socket.on("private message", ({ content, from, to }) => {
+      store.dispatch("user/getMessage", { content, from, to });
+    });
+
+    socket.on("call request", ({from}) => {
+      IncomingCall.dialog = true
+      IncomingCall.from = from
+    });
+
+    socket.on('call decline', ()=> {
+      console.log('hi');
+      closeCall();
     })
-
-
     socket.on("connect_error", (err: Error) => {
       if (err.message === "not logged in") {
         console.log("not logged in");
@@ -97,6 +136,8 @@ export default defineComponent({
     return {
       isAuthenticated,
       style,
+      IncomingCall,
+      onHangup
     };
   },
 });

@@ -130,6 +130,24 @@ io.on("connection", async (socket: UserSocket) => {
     socket.to(to).to(socket.userId!).emit("private message", message);
     messageStore.saveMessage(message);
   });
+ 
+  socket.on('call request', to => {
+    const callInfo = {
+      from: {
+        username: socket.username,
+        userId: socket.userId
+      }
+    }
+    socket.to(to).emit('call request', callInfo)
+  })
+
+  socket.on('call hangup', ({userId}) => {
+    socket.to(userId).emit('call hangup')
+  })
+
+  socket.on('call decline', ({userId})=> {
+    socket.to(userId).emit('call decline')
+  })
 
   socket.on("disconnect", async () => {
     const matchingSockeets = await io.in(socket.userId!).allSockets();

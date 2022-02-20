@@ -13,7 +13,7 @@
 
       <div class="chat-list">
         <q-list padding separator>
-          <div v-for="user in users" :key="user.userId" class="">
+          <div v-for="user in users" :key="user.userId">
             <router-link
               :to="{ name: 'chat', params: { id: user.userId } }"
               @click="onSelectUser(user)"
@@ -34,17 +34,31 @@
                 <q-item-section>
                   <q-item-label lines="1">{{ user.username }}</q-item-label>
                   <q-item-label caption lines="1">
-                    I'll be in your neighborhood doing errands this weekend. Do
-                    you want to grab brunch?
+                    {{
+                      user.messages.slice(-1)[0]
+                        ? user.messages.slice(-1)[0].content.text[0]
+                        : ""
+                    }}
                   </q-item-label>
                 </q-item-section>
 
                 <q-item-section side top>
-                  <q-icon
-                    name="fas fa-circle"
-                    class="status-icon"
-                    :class="{ online: user.connected }"
-                  />
+                  <div class="status">
+                    <q-icon
+                      name="fas fa-circle"
+                      class="status-icon inline"
+                      style="font-size: 8px; margin: auto"
+                      :class="{ online: user.connected }"
+                    />
+                    {{ user.connected ? "Online" : "Offline" }}
+                  </div>
+                  <div class="stamp">
+                    {{
+                      user.messages.slice(-1)[0]
+                        ? user.messages.slice(-1)[0].content.stamp
+                        : ""
+                    }}
+                  </div>
                 </q-item-section>
               </q-item>
             </router-link>
@@ -53,27 +67,32 @@
         </q-list>
       </div>
 
-          <AddDialog
-      @closeDialog="addUserDialog = !addUserDialog"
-      :showDialog="addUserDialog"
-    ></AddDialog>
+      <AddDialog
+        @closeDialog="addUserDialog = !addUserDialog"
+        :showDialog="addUserDialog"
+      ></AddDialog>
 
-    <FindDialog
-      @closeDialog="findUserDialog = !findUserDialog"
-      :showDialog="findUserDialog"
-    ></FindDialog>
+      <FindDialog
+        @closeDialog="findUserDialog = !findUserDialog"
+        :showDialog="findUserDialog"
+      ></FindDialog>
 
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn
-        fab
-        icon="fas fa-pencil-alt"
-        color="blue-6"
-        @click="findUserDialog = !findUserDialog"
-      />
-    </q-page-sticky>
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn
+          fab
+          icon="fas fa-pencil-alt"
+          color="blue-6"
+          @click="findUserDialog = !findUserDialog"
+        />
+      </q-page-sticky>
     </div>
     <div class="chat-window" v-else>
-      <router-view @unselect="unselectUser" @input="onMessage" :user="selectedUser"></router-view>
+      <router-view
+        @unselect="unselectUser"
+        @input="onMessage"
+        :user="selectedUser"
+        @call="onCall"
+      ></router-view>
     </div>
   </div>
 </template>
@@ -96,33 +115,35 @@ export default defineComponent({
   },
   setup() {
     const openChat = ref(false);
-    const selectedUser = computed(()=> store.getters['user/selectedUser'])
+    const selectedUser = computed(() => store.getters["user/selectedUser"]);
     const addUserDialog = ref(false);
     const findUserDialog = ref(false);
     const store = useStore();
     const users = computed(() => store.getters["user/getUsers"]);
 
-    function onMessage(content: Message){
-      socket.emit('private message', {
+    function onMessage(content: Message) {
+      socket.emit("private message", {
         content,
-        to: selectedUser.value.userId
-      })
-      store.dispatch('user/sendMessage', content)
+        to: selectedUser.value.userId,
+      });
+      store.dispatch("user/sendMessage", content);
     }
 
-    function onSelectUser(user: UserReactive){
-      openChat.value = true
-      store.dispatch('user/selectUser', user)
+    function onCall() {
+      socket.emit("call request", selectedUser.value.userId);
     }
 
-    function unselectUser(){
-      openChat.value = false
-      store.dispatch('user/selectUser', null)
+    function onSelectUser(user: UserReactive) {
+      openChat.value = true;
+      store.dispatch("user/selectUser", user);
     }
 
-    onUnmounted(() => {
+    function unselectUser() {
+      openChat.value = false;
+      store.dispatch("user/selectUser", null);
+    }
 
-    });
+    onUnmounted(() => {});
     return {
       addUserDialog,
       findUserDialog,
@@ -131,7 +152,8 @@ export default defineComponent({
       onSelectUser,
       selectedUser,
       unselectUser,
-      onMessage
+      onMessage,
+      onCall,
     };
   },
 });

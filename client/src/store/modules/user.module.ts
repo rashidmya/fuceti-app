@@ -131,6 +131,15 @@ const chatModule: Module<UserState, RootState> = {
     selectedUser(state) {
       return state.selectedUser;
     },
+    notifications(state){
+      let count = 0;
+      for (const user of state.users){
+        if ((<UserReactive>user).hasNewMessages){
+          count++
+        }
+      }
+      return count
+    }
   },
 };
 

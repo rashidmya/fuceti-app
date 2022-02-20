@@ -1,7 +1,7 @@
 <template>
   <q-header class="bg-dark fixed-top">
     <div class="row inline full-width">
-      <q-btn class="button" to="/" @click="$emit('unselect')">
+      <q-btn class="button" flat to="/" @click="$emit('unselect')">
         <q-icon
           style="font-size: 20px"
           color="primary"
@@ -13,21 +13,26 @@
           <img src="https://cdn.quasar.dev/img/avatar.png" />
         </q-avatar>
         <div class="user-info">
-          <div class="name">{{user.username}}</div>
+          <div class="name">{{ user.username }}</div>
           <div class="status">
             <q-icon
               name="fas fa-circle"
               class="status-icon"
               :class="{ online: user.connected }"
             />
-            {{ user.connected ? 'Online' : 'Offline'}}
+            {{ user.connected ? "Online" : "Offline" }}
           </div>
         </div>
       </div>
       <div class="call-buttons">
         <div class="row inline">
           <q-icon color="primary" name="fas fa-video" class="call" />
-          <q-icon color="primary" name="fas fa-phone" class="call" />
+          <q-icon
+            color="primary"
+            name="fas fa-phone"
+            class="call"
+            @click="$emit('call')"
+          />
         </div>
       </div>
     </div>
@@ -39,7 +44,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   props: ["user"],
-  emits: ['unselect']
+  emits: ["unselect", "call"],
 });
 </script>
 
