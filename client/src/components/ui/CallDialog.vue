@@ -21,25 +21,64 @@
         <q-card class="buttons bg-blue-grey-8">
           <q-card-section class="row items-center no-wrap q-mx-lg q-mt-sm">
             <q-btn
+            v-if="!isDeaf"
+              id="deaf"
               class="q-mx-auto"
               round
               color="blue-grey"
               icon="mdi-volume-high"
               size="16px"
+              @click="onDeafen"
             />
-            <q-btn
+                        <q-btn
+                        v-else
+              id="deaf"
               class="q-mx-auto"
               round
-              color="blue-grey"
-              icon="mdi-video"
+              color="blue-grey-3"
+              icon="mdi-volume-mute"
               size="16px"
+              @click="onDeafen"
             />
-            <q-btn
+                        <q-btn
+              v-if="!isMute"
+              id="mic"
               class="q-mx-auto"
               round
               color="blue-grey"
               icon="mdi-microphone"
               size="16px"
+              @click="onMute"
+            />
+            <q-btn
+              v-else
+              id="mic"
+              class="q-mx-auto active"
+              round
+              color="blue-grey-3"
+              icon="mdi-microphone-off"
+              size="16px"
+              @click="onMute"
+            />
+            <q-btn
+            v-if="!isVideo"
+              id="video"
+              class="q-mx-auto"
+              round
+              color="blue-grey"
+              icon="mdi-video"
+              size="16px"
+              @click="onVideo"
+            />
+                        <q-btn
+            v-else
+              id="video"
+              class="q-mx-auto"
+              round
+              color="blue-5"
+              icon="mdi-video"
+              size="16px"
+              @click="onVideo"
             />
             <q-btn
               class="q-mx-auto"
@@ -57,19 +96,40 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRef } from 'vue'
+import { defineComponent, toRef, ref } from "vue";
 
 export default defineComponent({
-    props: ['callDialogProp', 'user'],
-    emits: ['callDecline'],
-    setup(props) {
-        const callDialog = toRef(props, 'callDialogProp')
+  props: ["callDialogProp", "user"],
+  emits: ["callDecline"],
+  setup(props) {
+    const callDialog = toRef(props, "callDialogProp");
+    const isDeaf = ref(false);
+    const isMute = ref(false);
+    const isVideo = ref(false);
 
-        return {
-            callDialog
-        }
-    },
-})
+    function onMute() {
+      isMute.value = !isMute.value;
+    }
+
+    function onDeafen() {
+      isDeaf.value = !isDeaf.value
+    }
+
+    function onVideo(){
+      isVideo.value = !isVideo.value
+    }
+
+    return {
+      callDialog,
+      onMute,
+      onDeafen,
+      onVideo,
+      isMute,
+      isDeaf,
+      isVideo,
+    };
+  },
+});
 </script>
 
 <style scoped>
