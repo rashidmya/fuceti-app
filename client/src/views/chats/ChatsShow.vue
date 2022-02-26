@@ -68,19 +68,4 @@ export default defineComponent({
 .q-message {
   z-index: 1;
 }
-.calling {
-  color: rgba(255, 255, 255, 0.589);
-}
-.buttons {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 100px;
-  left: 0;
-  right: 0;
-  border-top-left-radius: 25px;
-  border-top-right-radius: 25px;
-  margin-left: auto;
-  margin-right: auto;
-}
 </style>
