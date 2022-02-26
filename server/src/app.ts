@@ -145,10 +145,6 @@ io.on("connection", async (socket: UserSocket) => {
     socket.to(userId).emit('call hangup')
   })
 
-  socket.on('call decline', ({userId})=> {
-    socket.to(userId).emit('call decline')
-  })
-
   socket.on("disconnect", async () => {
     const matchingSockeets = await io.in(socket.userId!).allSockets();
     const isDisconnected = matchingSockeets.size === 0;

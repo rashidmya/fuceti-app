@@ -11,42 +11,8 @@
           :sent="m.sent"
         />
       </div>
-      <ChatFooter @sendMessage="sendMessage" />
+      <ChatFooter @sendMessage="onMessage" />
     </div>
-    <q-dialog
-      v-model="callDialog"
-      persistent
-      maximized
-      transition-show="fade"
-      transition-hide="fade"
-    >
-      <q-card class="bg-blue-grey text-white">
-        <q-card-section class="q-mt-xl q-mb-none text-center">
-          <div class="text-h4">{{ user.username }}</div>
-          <div class="calling">calling {{ user.username }}...</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none absolute-center">
-          <q-avatar size="200px">
-            <img src="https://cdn.quasar.dev/img/avatar.png" />
-          </q-avatar>
-        </q-card-section>
-        <q-card-actions>
-          <q-card class="buttons bg-blue-grey-8">
-            <q-card-section class="row items-center no-wrap">
-              <div>
-                <div class="text-weight-bold">The Walker</div>
-                <div class="text-grey">Fitz & The Tantrums</div>
-              </div>
-
-              <q-space />
-
-              <q-btn flat round icon="fast_forward" @click="onDeclineCall"/>
-            </q-card-section>
-          </q-card>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
@@ -64,17 +30,16 @@ export default defineComponent({
     ChatFooter,
   },
   props: ["user"],
-  emits: ["input", "unselect", "call"],
+  emits: ["onMessage", "unselect", "call"],
   setup(props, { emit }) {
     const chatContainer = ref<HTMLDivElement>();
-    const callDialog = ref(false);
 
-    function sendMessage(newMessage: string) {
+    function onMessage(message: string) {
       const content: Content = {
-        text: [newMessage],
+        text: [message],
         stamp: `${moment(Date.now()).format("LT")}`,
       };
-      emit("input", content);
+      emit("onMessage", content);
 
       if (chatContainer.value) {
         console.log(chatContainer.value);
@@ -83,26 +48,13 @@ export default defineComponent({
     }
 
     function call() {
-      emit("call");
-      callDialog.value = true;
-    }
-
-    socket.on("call hangup", () => {
-      callDialog.value = false;
-    });
-
-    function onDeclineCall(){
-      const user = props.user
-      socket.emit('call decline', user);
-      callDialog.value = false
+      emit("call", props.user);
     }
 
     return {
-      sendMessage,
+      onMessage,
       chatContainer,
-      callDialog,
       call,
-      onDeclineCall
     };
   },
 });
@@ -122,10 +74,12 @@ export default defineComponent({
 .buttons {
   position: absolute;
   bottom: 0;
-  width: 90%;
+  width: 100%;
   height: 100px;
   left: 0;
   right: 0;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
   margin-left: auto;
   margin-right: auto;
 }

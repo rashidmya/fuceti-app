@@ -3,57 +3,67 @@
     <q-layout view="hHh lpR fFf" container>
       <q-page-container>
         <q-page padding>
-          <router-view></router-view>
+          <router-view @call="onCall" @onMessage="onMessage"></router-view>
         </q-page>
       </q-page-container>
       <BottomNav v-if="isAuthenticated"></BottomNav>
     </q-layout>
-    <q-dialog persistent v-model="IncomingCall.dialog" position="top">
-      <q-card style="width: 100%">
-        <q-card-section class="row items-center no-wrap">
-          <div>
-            <div class="text-weight-bold">{{IncomingCall.from.username}}</div>
-            <div class="text-grey">Incoming call</div>
-          </div>
-
-          <q-space />
-
-          <q-btn round icon="mdi-phone-hangup" color="red" @click="onHangup"/>
-          <q-btn round  icon="mdi-phone" color="green" class="q-ml-md" />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <incoming-call :incomingCallProp="incomingCall" @hangup="onHangup"></incoming-call>
+    <call-dialog :callDialogProp="callDialog" @callDecline="onDecline" :user="selectedUser"></call-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onUnmounted, reactive } from "vue";
+import { defineComponent, onUnmounted, reactive, computed, ref } from "vue";
 import BottomNav from "./components/layouts/BottomNav.vue";
+import IncomingCall from './components/ui/IncomingCall.vue'
+import CallDialog from './components/ui/CallDialog.vue'
 import { useQuasar } from "quasar";
 import { useStore } from "./store/store";
-import { computed } from "vue";
 import socket from "./utils/socket";
 import { User } from "./interfaces/user.interface";
+import { Message } from "./interfaces/message.interface";
 
 export default defineComponent({
   name: "App",
-  components: { BottomNav },
+  components: { BottomNav, IncomingCall, CallDialog },
   setup() {
     const $q = useQuasar();
     const store = useStore();
-    const IncomingCall = reactive({
+    const callDialog = ref(false);
+    const selectedUser = computed(() => store.getters["user/selectedUser"]);
+
+    const incomingCall = reactive({
       dialog: false,
       from: null
     })
 
+    function onMessage(content: Message){
+      socket.emit("private message", {
+        content,
+        to: selectedUser.value.userId,
+      });
+    }
+
     function closeCall(){
-      IncomingCall.dialog = false;
-      IncomingCall.from = null;
+      incomingCall.dialog = false;
+      incomingCall.from = null;
+      callDialog.value = false
     }
     
     function onHangup(){
-      socket.emit('call hangup', IncomingCall.from)
+      socket.emit('call hangup', incomingCall.from)
       closeCall();
+    }
+
+    function onDecline(){
+      socket.emit('call hangup', {userId: selectedUser.value.userId});
+      callDialog.value = false
+    }
+
+    function onCall(user: any){
+      socket.emit("call request", user.userId);
+      callDialog.value = true;
     }
 
     store.dispatch("auth/verify");
@@ -104,12 +114,17 @@ export default defineComponent({
     });
 
     socket.on("call request", ({from}) => {
-      IncomingCall.dialog = true
-      IncomingCall.from = from
+      incomingCall.dialog = true
+      incomingCall.from = from
     });
 
-    socket.on('call decline', ()=> {
+    socket.on('call hangup', ()=> {
       closeCall();
+    })
+
+    
+    socket.on("call answer", () => {
+      
     })
     
     socket.on("connect_error", (err: Error) => {
@@ -136,8 +151,13 @@ export default defineComponent({
     return {
       isAuthenticated,
       style,
-      IncomingCall,
-      onHangup
+      incomingCall,
+      onHangup,
+      onCall,
+      callDialog,
+      selectedUser,
+      onDecline,
+      onMessage
     };
   },
 });

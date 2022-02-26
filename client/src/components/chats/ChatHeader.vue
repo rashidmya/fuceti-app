@@ -29,7 +29,7 @@
           <q-icon color="primary" name="fas fa-video" class="call" />
           <q-icon
             color="primary"
-            name="fas fa-phone"
+            name="fas fa-phone-alt"
             class="call"
             @click="$emit('call')"
           />

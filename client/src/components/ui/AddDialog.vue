@@ -14,7 +14,7 @@
           icon="fas fa-chevron-down"
           label="back"
           color="white"
-          @click="emit('closeDialog')"
+          @click="$emit('closeDialog')"
         />
       </q-card-section>
 
@@ -55,7 +55,6 @@ export default defineComponent({
       prompt,
       addUserInput,
       addUser,
-      emit,
     };
   },
 });

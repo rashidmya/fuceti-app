@@ -14,7 +14,7 @@
           icon="fas fa-chevron-down"
           label="back"
           color="white"
-          @click="emit('closeDialog')"
+          @click="$emit('closeDialog')"
         />
       </q-card-section>
 
@@ -32,14 +32,13 @@ import { defineComponent, toRef, ref } from "vue";
 export default defineComponent({
   props: ["showDialog"],
   emits: ["closeDialog"],
-  setup(props, { emit }) {
+  setup(props) {
     const prompt = toRef(props, "showDialog");
     const findUserInput = ref("");
 
     return {
       prompt,
       findUserInput,
-      emit,
     };
   },
 });

@@ -89,7 +89,7 @@
     <div class="chat-window" v-else>
       <router-view
         @unselect="unselectUser"
-        @input="onMessage"
+        @onMessage="onMessage"
         :user="selectedUser"
         @call="onCall"
       ></router-view>
@@ -104,7 +104,7 @@ import AddDialog from "../../components/ui/AddDialog.vue";
 import { defineComponent, ref, onUnmounted, computed } from "vue";
 import { useStore } from "../../store/store";
 import socket from "../../utils/socket";
-import { UserReactive } from "../../interfaces/user.interface";
+import { User, UserReactive } from "../../interfaces/user.interface";
 import { Message } from "../../interfaces/message.interface";
 
 export default defineComponent({
@@ -113,7 +113,8 @@ export default defineComponent({
     FindDialog,
     AddDialog,
   },
-  setup() {
+  emits:['call', 'onMessage'],
+  setup(_, {emit}) {
     const openChat = ref(false);
     const selectedUser = computed(() => store.getters["user/selectedUser"]);
     const addUserDialog = ref(false);
@@ -122,15 +123,12 @@ export default defineComponent({
     const users = computed(() => store.getters["user/getUsers"]);
 
     function onMessage(content: Message) {
-      socket.emit("private message", {
-        content,
-        to: selectedUser.value.userId,
-      });
+      emit('onMessage', content)
       store.dispatch("user/sendMessage", content);
     }
 
-    function onCall() {
-      socket.emit("call request", selectedUser.value.userId);
+    function onCall(user: User) {
+      emit('call', user)
     }
 
     function onSelectUser(user: UserReactive) {

@@ -57,8 +57,10 @@ const chatModule: Module<UserState, RootState> = {
           }
         }
         user.self = user.userId === socket.userId;
-        initReactiveProperties(user as UserReactive);
-        state.users.push(user);
+        if (!user.self){
+          initReactiveProperties(user as UserReactive);
+          state.users.push(user);
+        }
       });
       // put the current user first, and sort by username
       state.users.sort((a, b) => {
