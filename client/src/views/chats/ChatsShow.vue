@@ -22,7 +22,6 @@ import moment from "moment";
 import ChatHeader from "../../components/chats/ChatHeader.vue";
 import ChatFooter from "../../components/chats/ChatFooter.vue";
 import { Content } from "../../interfaces/message.interface";
-import socket from "../../utils/socket";
 
 export default defineComponent({
   components: {

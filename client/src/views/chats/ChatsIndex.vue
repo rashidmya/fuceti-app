@@ -13,57 +13,57 @@
 
       <div class="chat-list">
         <q-list padding separator>
-          <div v-for="user in users" :key="user.userId">
-            <router-link
-              :to="{ name: 'chat', params: { id: user.userId } }"
-              @click="onSelectUser(user)"
-            >
-              <q-item clickable v-ripple dense>
-                <q-item-section avatar>
-                  <q-avatar>
-                    <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
-                    <q-badge
-                      color="red"
-                      rounded
-                      floating
-                      v-if="user.hasNewMessages"
-                    />
-                  </q-avatar>
-                </q-item-section>
+          <q-item
+            clickable
+            v-ripple
+            dense
+            @click="onSelectUser(user)"
+            v-for="user in users"
+            :key="user.userId"
+          >
+            <q-item-section avatar>
+              <q-avatar>
+                <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
+                <q-badge
+                  color="red"
+                  rounded
+                  floating
+                  v-if="user.hasNewMessages"
+                />
+              </q-avatar>
+            </q-item-section>
 
-                <q-item-section>
-                  <q-item-label lines="1">{{ user.username }}</q-item-label>
-                  <q-item-label caption lines="1">
-                    {{
-                      user.messages.slice(-1)[0]
-                        ? user.messages.slice(-1)[0].content.text[0]
-                        : ""
-                    }}
-                  </q-item-label>
-                </q-item-section>
+            <q-item-section>
+              <q-item-label lines="1">{{ user.username }}</q-item-label>
+              <q-item-label caption lines="1">
+                {{
+                  user.messages.slice(-1)[0]
+                    ? user.messages.slice(-1)[0].content.text[0]
+                    : ""
+                }}
+              </q-item-label>
+            </q-item-section>
 
-                <q-item-section side top>
-                  <div class="status">
-                    <q-icon
-                      name="fas fa-circle"
-                      class="status-icon inline"
-                      style="font-size: 8px; margin: auto"
-                      :class="{ online: user.connected }"
-                    />
-                    {{ user.connected ? "Online" : "Offline" }}
-                  </div>
-                  <div class="stamp">
-                    {{
-                      user.messages.slice(-1)[0]
-                        ? user.messages.slice(-1)[0].content.stamp
-                        : ""
-                    }}
-                  </div>
-                </q-item-section>
-              </q-item>
-            </router-link>
-            <q-separator spaced inset="item" />
-          </div>
+            <q-item-section side top>
+              <div class="status">
+                <q-icon
+                  name="fas fa-circle"
+                  class="status-icon inline"
+                  style="font-size: 8px; margin: auto"
+                  :class="{ online: user.connected }"
+                />
+                {{ user.connected ? "Online" : "Offline" }}
+              </div>
+              <div class="stamp">
+                {{
+                  user.messages.slice(-1)[0]
+                    ? user.messages.slice(-1)[0].content.stamp
+                    : ""
+                }}
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-separator spaced inset="item" />
         </q-list>
       </div>
 
@@ -103,9 +103,9 @@ import FindDialog from "../../components/ui/FindDialog.vue";
 import AddDialog from "../../components/ui/AddDialog.vue";
 import { defineComponent, ref, onUnmounted, computed } from "vue";
 import { useStore } from "../../store/store";
-import socket from "../../utils/socket";
 import { User, UserReactive } from "../../interfaces/user.interface";
 import { Message } from "../../interfaces/message.interface";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -113,8 +113,9 @@ export default defineComponent({
     FindDialog,
     AddDialog,
   },
-  emits:['call', 'onMessage'],
-  setup(_, {emit}) {
+  emits: ["call", "onMessage"],
+  setup(_, { emit }) {
+    const router = useRouter();
     const openChat = ref(false);
     const selectedUser = computed(() => store.getters["user/selectedUser"]);
     const addUserDialog = ref(false);
@@ -123,15 +124,16 @@ export default defineComponent({
     const users = computed(() => store.getters["user/getUsers"]);
 
     function onMessage(content: Message) {
-      emit('onMessage', content)
+      emit("onMessage", content);
       store.dispatch("user/sendMessage", content);
     }
 
     function onCall(user: User) {
-      emit('call', user)
+      emit("call", user);
     }
 
     function onSelectUser(user: UserReactive) {
+      router.push({ name: 'chat', params: { id: user.userId } })
       openChat.value = true;
       store.dispatch("user/selectUser", user);
     }
