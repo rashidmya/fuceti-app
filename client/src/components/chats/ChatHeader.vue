@@ -10,7 +10,7 @@
       </q-btn>
       <div class="profile row inline q-ml-xs">
         <q-avatar>
-          <img src="https://cdn.quasar.dev/img/avatar.png" />
+          <img src="@/assets/default-avatar.png" />
         </q-avatar>
         <div class="user-info">
           <div class="name">{{ user.username }}</div>

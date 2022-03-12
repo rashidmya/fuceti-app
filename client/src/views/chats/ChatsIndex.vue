@@ -23,7 +23,7 @@
           >
             <q-item-section avatar>
               <q-avatar>
-                <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
+                <img src="@/assets/default-avatar.png" />
                 <q-badge
                   color="red"
                   rounded

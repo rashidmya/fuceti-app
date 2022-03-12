@@ -16,7 +16,7 @@
     <call-dialog
       :callDialogProp="call"
       @callDecline="onCallerDecline"
-      :user="selectedUser || call.user"
+      :user="call.user"
     ></call-dialog>
   </div>
 </template>
@@ -32,6 +32,7 @@ import socket from "./utils/socket";
 import { User } from "./interfaces/user.interface";
 import { Message } from "./interfaces/message.interface";
 
+
 export default defineComponent({
   name: "App",
   components: { BottomNav, IncomingCall, CallDialog },
@@ -40,6 +41,8 @@ export default defineComponent({
     const store = useStore();
     const selectedUser = computed(() => store.getters["user/selectedUser"]);
     const call = computed(()=> store.getters['call/call'])
+
+
 
     function onMessage(content: Message) {
       socket.emit("private message", {
@@ -132,7 +135,7 @@ export default defineComponent({
     });
 
     socket.on("call answer", () => {
-      console.log("call answered");
+      answerCall();
     });
 
     socket.on("connect_error", (err: Error) => {
@@ -162,7 +165,6 @@ export default defineComponent({
       call,
       onHangup,
       onCall,
-      selectedUser,
       onCallerDecline,
       onMessage,
       onAnswer,
