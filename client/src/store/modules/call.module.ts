@@ -35,7 +35,6 @@ const chatModule: Module<CallState, RootState> = {
       commit('request', payload)
     },
     incoming({commit}, payload){
-      console.log('1');
       commit('incoming', payload)
     },
     hangup({commit}){
