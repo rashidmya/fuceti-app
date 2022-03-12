@@ -8,16 +8,24 @@
       </q-page-container>
       <BottomNav v-if="isAuthenticated"></BottomNav>
     </q-layout>
-    <incoming-call :incomingCallProp="incomingCall" @hangup="onHangup"></incoming-call>
-    <call-dialog :callDialogProp="callDialog" @callDecline="onDecline" :user="selectedUser"></call-dialog>
+    <incoming-call
+      :incomingCallProp="call"
+      @hangup="onHangup"
+      @answer="onAnswer"
+    ></incoming-call>
+    <call-dialog
+      :callDialogProp="call"
+      @callDecline="onCallerDecline"
+      :user="selectedUser || call.user"
+    ></call-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onUnmounted, reactive, computed, ref } from "vue";
 import BottomNav from "./components/layouts/BottomNav.vue";
-import IncomingCall from './components/ui/IncomingCall.vue'
-import CallDialog from './components/ui/CallDialog.vue'
+import IncomingCall from "./components/ui/IncomingCall.vue";
+import CallDialog from "./components/ui/CallDialog.vue";
 import { useQuasar } from "quasar";
 import { useStore } from "./store/store";
 import socket from "./utils/socket";
@@ -30,40 +38,42 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const store = useStore();
-    const callDialog = ref(false);
     const selectedUser = computed(() => store.getters["user/selectedUser"]);
+    const call = computed(()=> store.getters['call/call'])
 
-    const incomingCall = reactive({
-      dialog: false,
-      from: null
-    })
-
-    function onMessage(content: Message){
+    function onMessage(content: Message) {
       socket.emit("private message", {
         content,
         to: selectedUser.value.userId,
       });
     }
 
-    function closeCall(){
-      incomingCall.dialog = false;
-      incomingCall.from = null;
-      callDialog.value = false
+    function onCall(user: any) {
+      socket.emit("call request", user.userId);
+      store.dispatch('call/request', user)
     }
-    
-    function onHangup(){
-      socket.emit('call hangup', incomingCall.from)
+
+    function onCallerDecline() {
+      socket.emit("call hangup", { userId: call.value.user.userId });
       closeCall();
     }
 
-    function onDecline(){
-      socket.emit('call hangup', {userId: selectedUser.value.userId});
-      callDialog.value = false
+    function onHangup() {
+      socket.emit("call hangup", call.value.user);
+      closeCall();
     }
 
-    function onCall(user: any){
-      socket.emit("call request", user.userId);
-      callDialog.value = true;
+    function onAnswer() {
+      socket.emit("call answer", call.value.user)
+      answerCall();
+    }
+
+    function closeCall() {
+      store.dispatch('call/hangup')
+    }
+
+    function answerCall(){
+      store.dispatch('call/answer')
     }
 
     store.dispatch("auth/verify");
@@ -113,20 +123,18 @@ export default defineComponent({
       store.dispatch("user/getMessage", { content, from, to });
     });
 
-    socket.on("call request", ({from}) => {
-      incomingCall.dialog = true
-      incomingCall.from = from
+    socket.on("call request", ({ from }) => {
+      store.dispatch("call/incoming", from)
     });
 
-    socket.on('call hangup', ()=> {
+    socket.on("call hangup", () => {
       closeCall();
-    })
+    });
 
-    
     socket.on("call answer", () => {
-      
-    })
-    
+      console.log("call answered");
+    });
+
     socket.on("connect_error", (err: Error) => {
       if (err.message === "not logged in") {
         console.log("not logged in");
@@ -151,13 +159,13 @@ export default defineComponent({
     return {
       isAuthenticated,
       style,
-      incomingCall,
+      call,
       onHangup,
       onCall,
-      callDialog,
       selectedUser,
-      onDecline,
-      onMessage
+      onCallerDecline,
+      onMessage,
+      onAnswer,
     };
   },
 });

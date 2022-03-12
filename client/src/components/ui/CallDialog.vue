@@ -1,6 +1,6 @@
 <template>
   <q-dialog
-    v-model="callDialog"
+    v-model="call.connected"
     persistent
     maximized
     transition-show="fade"
@@ -102,7 +102,7 @@ export default defineComponent({
   props: ["callDialogProp", "user"],
   emits: ["callDecline"],
   setup(props) {
-    const callDialog = toRef(props, "callDialogProp");
+    const call = toRef(props, "callDialogProp");
     const isDeaf = ref(false);
     const isMute = ref(false);
     const isVideo = ref(false);
@@ -120,7 +120,7 @@ export default defineComponent({
     }
 
     return {
-      callDialog,
+      call,
       onMute,
       onDeafen,
       onVideo,
