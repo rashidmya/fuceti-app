@@ -14,7 +14,7 @@
 
       <q-card-section class="q-pt-none absolute-center">
         <q-avatar size="200px">
-          <img src="https://cdn.quasar.dev/img/avatar.png" />
+          <img src="@/assets/default-avatar.png" />
         </q-avatar>
       </q-card-section>
       <q-card-actions>
